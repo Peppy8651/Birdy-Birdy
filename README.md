@@ -1,33 +1,5 @@
-﻿# Birdy-Birdy
 # Birdy-Birdy
 
-Usage: npm <command>
-
-where <command> is one of:
-    access, adduser, audit, bin, bugs, c, cache, ci, cit,
-    clean-install, clean-install-test, completion, config,
-    create, ddp, dedupe, deprecate, dist-tag, docs, doctor,
-    edit, explore, fund, get, help, help-search, hook, i, init,
-    install, install-ci-test, install-test, it, link, list, ln,
-    login, logout, ls, org, outdated, owner, pack, ping, prefix,
-    profile, prune, publish, rb, rebuild, repo, restart, root,
-    run, run-script, s, se, search, set, shrinkwrap, star,
-    stars, start, stop, t, team, test, token, tst, un,
-    uninstall, unpublish, unstar, up, update, v, version, view,
-    whoami
-
-npm <command> -h  quick help on <command>
-npm -l            display full usage info
-npm help <term>   search for help on <term>
-npm help npm      involved overview
-
-Specify configs in the ini-formatted file:
-    C:\Users\Owner\.npmrc
-or on the command line via: npm <command> --key value
-Config info can be viewed via: npm help config
-
-npm@6.14.8 C:\Program Files\nodejs\node_modules\npm
-
-# Birdy-Birdy
-# Birdy-Birdy
-# Birdy-Birdy
+Birdy Birdy is a multipurpose Discord bot. This is the Github repository for the code that I use. It uses Javascript and libraries including discord.js, ytdl-core, node-ytsr, etc.
+The bot is currently hosted in a node.js server at home.
+Here is a link to invite Birdy: https://discord.com/oauth2/authorize?client_id=756148630578135182&scope=bot&permissions=2146958591
