@@ -1,0 +1,6 @@
+[
+	{
+		"question": "Choose the type of time you want!",
+		"answers": ["MINUTES","SECONDS","HOURS"]
+    }
+]
