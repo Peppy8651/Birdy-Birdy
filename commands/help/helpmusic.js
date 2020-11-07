@@ -12,8 +12,12 @@ module.exports = {
 			.setDescription(`**Prefix**: ${globalPrefix}. Here's all the commands that are in the music section;
 
 **add (query/link: youtubevid)** - adds a video or song to the queue if something is currently playing in a server.
+
+**clear**: clears the queue.
 			
 **cut (args: count)** - cuts out a certain URL in a queue and keeps it from being played if it is not already being played.
+
+**disconnect**: makes Birdy disconnect from a voice channel.
 
 **loop (args: optionalboolean)** - loops audio from an already playing video.
 

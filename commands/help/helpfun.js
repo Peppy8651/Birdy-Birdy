@@ -27,8 +27,6 @@ module.exports = {
 
 **rickroll**: plays Never Gonna Give You Up in the voice channel that you are in. Pretty good for pranks isn't it?
 
-**yes**: Gives you the yes role! I'm pretty sure that role is useless, but who cares?
-
 **trickortreat**: You're an adult on Halloween. Some trick-or-treaters knock on your door, so it's time to give them a trick or a treat!
 
 **1-10**: gives a random number from 1 to 10.

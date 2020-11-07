@@ -102,22 +102,6 @@ Any suggestions or feedback? Message my owner!` },
 		message.channel.send(embed);
 	}
 });
-client.on('message', async message => {
-	if (!message.guild) return;
-	if(message.author.id === client.user.id) return;
-	if (message.content.toLowerCase().startsWith(globalPrefix + 'yes')) {
-		if (message.member.roles.cache.find(role => role.name === 'yes')) {
-			message.channel.send('You already have this role, silly!');
-		}
-		else {
-			const YES_ROLE = message.guild.roles.cache.find(role => role.name === 'yes');
-			message.member.roles.add(YES_ROLE);
-			message.channel.send(`You now have the ${YES_ROLE} role! I hope nobody noticed that I just pinged everyone with a yes role... Please don't fire me!`, {
-				allowedMentions:false,
-			});
-		}
-	}
-});
 
 client.on('message', async message => {
 	if (!message.guild) return;
@@ -158,28 +142,6 @@ client.on('message', async message => {
 	if(message.content.toLowerCase().startsWith(globalPrefix + 'ban')) {
 		if (!message.member.hasPermission('ADMINISTRATOR')) return message.channel.send('You don\'t have the permissions to use this command!');
 		client.commands.get('ban').execute(message);
-	}
-});
-
-client.on('message', async message => {
-	if (!message.guild) return;
-	if(message.author.id === client.user.id) return;
-	if (message.guild.roles.cache.find(role => role.name === 'yes')) {
-		// yes oh yes
-	}
-	else {
-		message.guild.roles.create({
-			data: {
-				name: 'yes',
-				color: 'GOLD',
-			},
-			reason: 'lololololololololololol',
-		}).then(() => {
-			message.channel.send('Bruh I just made a yes role lul', {
-				tts:true,
-			});
-			console.log(`Made yes role in ${message.guild.name}`);
-		}).catch(console.error);
 	}
 });
 
@@ -795,10 +757,8 @@ client.on('message', message => {
 	if (!message.guild) return;
 	if (message.content.toLowerCase().startsWith(globalPrefix + 'disconnect')) {
 		if (!message.guild.me.voice.channel) return message.channel.send('I\'m not in a channel so I can\'t leave.');
+		if (playingMap.has(`${message.guild.id}`, 'Now Playing')) return message.channel.send('Sorry, but I can\'t let you disconnect me from a voice channel while I\'m playing.');
 		message.guild.me.voice.channel.leave();
-		const server = servers[message.guild.id];
-		server.queue.splice(0, server.queue.length);
-		playingMap.delete(`${message.guild.id}`, 'Now Playing');
 		message.channel.send('Ok, see you soon.');
 	}
 });
@@ -865,5 +825,19 @@ client.on('message', async message => {
 		server.queue.push(video);
 		const info = await ytdl.getBasicInfo(`${video}`);
 		message.channel.send(`Added **${info.videoDetails.title}** to the queue.`);
+	}
+});
+
+client.on('message', message => {
+	if (!message.guild) return;
+	if (message.content.toLowerCase().startsWith(globalPrefix + 'clear')) {
+		if (!message.member.voice.channel) return message.channel.send('You can\'t use this command outside of a voice channel!');
+		if (playingMap.has(`${message.guild.id}`, 'Now Playing') == false) return message.channel.send('There isn\'t anything playing in this server.');
+		if (message.member.voice.channelID != message.guild.me.voice.channelID) return message.channel.send('Doesn\'t look like there is anything playing in this channel.');
+		const server = servers[message.guild.id];
+		if (!server.queue[0]) return message.channel.send('Doesn\'t seem like there is anything in this server\'s queue.');
+		if (!server.queue[1]) return message.channel.send('But what are you trying to clear? Once this song ends the queue will be cleared anyway!');
+		server.queue.splice(1, server.queue.length);
+		message.channel.send('Cleared queue!');
 	}
 });
