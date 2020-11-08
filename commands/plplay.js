@@ -33,11 +33,11 @@ module.exports = {
 			return message.channel.send(`Added **${queryplaylist.title}** to queue.`);
 		}
 		else {
-			playPlayList();
+			playSong();
 			playingMap.set(`${message.guild.id}`, 'Now Playing');
 		}
 		// eslint-disable-next-line no-inner-declarations
-		async function playPlayList() {
+		async function playSong() {
 			const connection = await message.member.voice.channel.join();
 			const stream = ytdl(`${server.queue[0]}`, { filter: 'audioonly' });
 			server.dispatcher = connection.play(stream);
@@ -47,13 +47,12 @@ module.exports = {
 				if (!info.videoDetails.thumbnail.thumbnails[1]) videothumb = info.videoDetails.thumbnail.thumbnails[0].url;
 				if (!info.videoDetails.thumbnail.thumbnails[2]) videothumb = info.videoDetails.thumbnail.thumbnails[1].url;
 				if (!info.videoDetails.thumbnail.thumbnails[3]) videothumb = info.videoDetails.thumbnail.thumbnails[2].url;
-				if (!info.videoDetails.thumbnail.thumbnails[4]) videothumb = info.videoDetails.thumbnail.thumbnails[3].url;
+				if(!info.videoDetails.thumbnail.thumbnails[4]) videothumb = info.videoDetails.thumbnail.thumbnails[3].url;
 				if (info.videoDetails.thumbnail.thumbnails[4]) videothumb = info.videoDetails.thumbnail.thumbnails[4].url;
 				const embed = new Discord.MessageEmbed()
-					.setTitle('**Now Playing Playlist**')
-					.setURL(queryplaylist.url)
-					.setDescription(`**[${info.videoDetails.title}](${info.videoDetails.video_url})**`)
 					.setAuthor(`${info.videoDetails.author.name} on Youtube`)
+					.setTitle('**Now Playing**')
+					.setDescription(`**[${info.videoDetails.title}](${info.videoDetails.video_url})**`)
 					.setColor(0xFF0000)
 					.setImage(videothumb)
 					.addFields(
@@ -64,7 +63,7 @@ module.exports = {
 					.setTimestamp();
 				message.channel.send(embed);
 				console.log(`Now playing in ${message.guild.name}!`);
-				if (!message.guild.voice.selfDeaf) connection.voice.setSelfDeaf(true).then(console.log('Birdy deafened'));
+				if (!message.guild.voice.selfDeaf) connection.voice.setSelfDeaf(true).then(() => console.log('Birdy deafened'));
 			});
 			server.dispatcher.on('finish', async () => {
 				if (server.loopvalue === false) server.queue.shift();
@@ -74,12 +73,12 @@ module.exports = {
 					return console.log(`Music now finished in ${message.guild.name}`);
 				}
 				else {
-					playPlayList(message);
+					playSong();
 				}
 			});
 			server.dispatcher.on('error', async () => {
-				message.channel.send('There was an error while playing your music. Please try again.').then(() => connection.disconnect());
-				server.queue.splice(0, server.queue.length);
+				message.channel.send('There was an error while playing your music. I will now attempt to replay your song.');
+				playSong();
 			});
 		}
 	},
