@@ -27,7 +27,7 @@ module.exports = {
 
 **play (link: videolink)** - plays the audio from the Youtube video link in a voice channel. If something is already being played, it is added to the server's queue.
 
-**plplay (link: playlistlink)** - plays videos from a Youtube playlist link in a voice channel in a queue.
+**play (link: playlistlink)** - plays videos from a Youtube playlist link in a voice channel in a queue. If something is already being played, it is added to the server's queue.
 
 **stop**: if audio is being played in a voice channel, this command ends that session by destroying the dispatcher connection.
 
