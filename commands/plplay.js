@@ -18,7 +18,7 @@ module.exports = {
 	description: 'playlist part of play command',
 	async execute(message, server, playingMap) {
 		// eslint-disable-next-line no-inner-declarations
-		const command = '>plplay';
+		const command = '>play';
 		const args = message.content.slice(command.length).trim().split(/ -/);
 		const query = args.join(' ');
 		if (ytpl.validateID(query) === false) return message.channel.send('This is not a valid playlist URL!');
@@ -28,12 +28,18 @@ module.exports = {
 			const listurls = queryplaylist.items[i].url_simple;
 			server.queue.push(listurls);
 		}
-		if (playingMap.has(`${message.guild.id}`, 'Now Playing') == false) playingMap.set(`${message.guild.id}`, 'Now Playing');
-		playPlayList();
+		if (playingMap.has(`${message.guild.id}`, 'Now Playing')) {
+			console.log('Added playlist to queue');
+			return message.channel.send(`Added **${queryplaylist.title}** to queue.`);
+		}
+		else {
+			playPlayList();
+			playingMap.set(`${message.guild.id}`, 'Now Playing');
+		}
 		// eslint-disable-next-line no-inner-declarations
 		async function playPlayList() {
 			const connection = await message.member.voice.channel.join();
-			const stream = ytdl(`${server.queue[0]}`, { filter: 'audio' });
+			const stream = ytdl(`${server.queue[0]}`, { filter: 'audioonly' });
 			server.dispatcher = connection.play(stream);
 			server.dispatcher.on('start', async () => {
 				const info = await ytdl.getInfo(`${server.queue[0]}`);

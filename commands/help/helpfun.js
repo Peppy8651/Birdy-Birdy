@@ -25,7 +25,7 @@ module.exports = {
 
 **picmeme (description: args[0]) | (imageurl: args[1])** - makes a memeish embed using arguments and urls. If you don't put a url or argument Birdy gets an error, boohoo.
 
-**rickroll**: plays Never Gonna Give You Up in the voice channel that you are in. Pretty good for pranks isn't it?
+**rr**: nothing to see here. If you want to use this command for nothing other than curiousity, just join a voice channel and use it. If you know what it already is, go ahead and use it on your friends or other online users in a voice channel.
 
 **trickortreat**: You're an adult on Halloween. Some trick-or-treaters knock on your door, so it's time to give them a trick or a treat!
 

@@ -1,4 +1,3 @@
-/* eslint-disable no-case-declarations */
 /* eslint-disable no-undef */
 /* eslint-disable no-inline-comments */
 /* eslint-disable prefer-const */
@@ -261,8 +260,9 @@ client.on('message', async message => {
 client.on('message', async message => {
 	if (!message.guild) return;
 	if(message.author.id === client.user.id) return;
-	if (message.content.toLowerCase().startsWith(globalPrefix + 'rickroll')) {
-		client.commands.get('rickroll').execute(message);
+	if (message.content.toLowerCase().startsWith(globalPrefix + 'rr')) {
+		const server = servers[message.guild.id];
+		client.commands.get('rickroll').execute(message, server, playingMap);
 	}
 });
 
@@ -689,7 +689,7 @@ client.on('message', async message => {
 		const server = servers[message.guild.id];
 		message.guild.voice.connection.dispatcher.destroy();
 		message.channel.send('⏹️ Music content stopped successfully ⏹️');
-		if (server.loopvalue == true) server.loopvalue == false;
+		if (server.loopvalue != false) server.loopvalue == false;
 		server.queue.splice(0, server.queue.length);
 		playingMap.delete(message.guild.id, 'Now Playing');
 	}

@@ -51,7 +51,7 @@ module.exports = {
 				let connection;
 				if (message.member.voice.channel.joinable == null) console.log('Idk why but this happened.');
 				if (message.member.voice.channel.joinable) connection = await message.member.voice.channel.join();
-				const stream = ytdl(`${server.queue[0]}`, { filter: 'audio' });
+				const stream = ytdl(`${server.queue[0]}`, { filter: 'audioonly' });
 				server.dispatcher = connection.play(stream);
 				server.dispatcher.on('start', async () => {
 					const info = await ytdl.getInfo(`${server.queue[0]}`);
