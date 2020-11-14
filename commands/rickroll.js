@@ -2,21 +2,11 @@
 // eslint-disable-next-line no-unused-vars
 const Discord = require('discord.js');
 const ytdl = require('ytdl-core');
-function secondsToHms(d) {
-	d = Number(d);
-	var h = Math.floor(d / 3600);
-	var m = Math.floor(d % 3600 / 60);
-	var s = Math.floor(d % 3600 % 60);
-	var hDisplay = h > 9 ? h + (h == 1 ? ':' : ':') : h > 0 ? h + ':' : '';
-	var mDisplay = m > 9 ? m + (m == 1 ? ':' : ':') : h == 0 ? m + (m == 1 ? ':' : ':') : m > 0 ? '0' + m + (m == 1 ? ':' : ':') : '00:';
-	var sDisplay = s > 9 ? s + (s == 1 ? '' : '') : s > 0 ? '0' + s + (s == 1 ? '' : '') : '00';
-	return hDisplay + mDisplay + sDisplay;
-}
 module.exports = {
 	name: 'rickroll',
 	description: 'rickroll command',
 	async execute(message, server, playingMap) {
-		if (message.member.voice.channel) return message.channel.send('You need to be in a voice channel for this!');
+		if (!message.member.voice.channel) return message.channel.send('You need to be in a voice channel for this!');
 		const connection = await message.member.voice.channel.join();
 		playingMap.delete(`${message.guild.id}`, 'Now Playing');
 		try {
@@ -44,25 +34,18 @@ module.exports = {
 		async function playSong() {
 			playingMap.set(`${message.guild.id}`, 'Now Playing');
 			if (message.member.voice.channel.joinable == null) console.log('Idk why but this happened.');
-			const newstream = ytdl(`${server.queue[0]}`, { filter: 'audioonly' });
+			const newstream = ytdl(`${server.queue[0].url}`, { filter: 'audioonly' });
 			server.dispatcher = connection.play(newstream);
 			server.dispatcher.on('start', async () => {
-				const info = await ytdl.getInfo(`${server.queue[0]}`);
-				let videothumb;
-				if (!info.videoDetails.thumbnail.thumbnails[1]) videothumb = info.videoDetails.thumbnail.thumbnails[0].url;
-				if (!info.videoDetails.thumbnail.thumbnails[2]) videothumb = info.videoDetails.thumbnail.thumbnails[1].url;
-				if (!info.videoDetails.thumbnail.thumbnails[3]) videothumb = info.videoDetails.thumbnail.thumbnails[2].url;
-				if(!info.videoDetails.thumbnail.thumbnails[4]) videothumb = info.videoDetails.thumbnail.thumbnails[3].url;
-				if (info.videoDetails.thumbnail.thumbnails[4]) videothumb = info.videoDetails.thumbnail.thumbnails[4].url;
 				const embed = new Discord.MessageEmbed()
-					.setAuthor(`${info.videoDetails.author.name} on Youtube`)
+					.setAuthor(`${server.queue[0].author} on Youtube`)
 					.setTitle('**Now Playing**')
-					.setDescription(`**[${info.videoDetails.title}](${info.videoDetails.video_url})**`)
+					.setDescription(`**[${server.queue[0].title}](${server.queue[0].url})**`)
 					.setColor(0xFF0000)
-					.setImage(videothumb)
+					.setImage(server.queue[0].thumbnail)
 					.addFields(
-						{ name: 'Duration', value: secondsToHms(info.videoDetails.lengthSeconds), inline: true },
-						{ name: 'Upload Date', value: info.videoDetails.uploadDate, inline: true },
+						{ name: 'Duration', value: server.queue[0].duration, inline: true },
+						{ name: 'Upload Date', value: server.queue[0].uploadDate, inline: true },
 					)
 					.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
 					.setTimestamp();
@@ -76,6 +59,7 @@ module.exports = {
 				case 0:
 					playingMap.delete(`${message.guild.id}`, 'Now Playing');
 					message.channel.send('The music is done!');
+					if (server.loopvalue == true) server.loopvalue = false;
 					console.log(`Music now finished in ${message.guild.name}`);
 					break;
 				default:

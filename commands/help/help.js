@@ -1,10 +1,9 @@
 const Discord = require('discord.js');
-const { globalPrefix } = require('C:/Users/Owner/Documents/BirdyBirdy/config.json');
 
 module.exports = {
 	name: 'help',
 	description: 'help command',
-	execute(message, client) {
+	async execute(message, client, globalPrefix) {
 		const embed = new Discord.MessageEmbed()
 			.setTitle('**Command Types**')
 			.setThumbnail(client.user.displayAvatarURL())

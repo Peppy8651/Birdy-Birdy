@@ -5,11 +5,13 @@ module.exports = {
 	name: 'kick',
 	description: 'kickcommand',
 	execute(message) {
-		const member = message.mentions.members.first();
-		if (!member) return message.channel.send('You need to ping a member for this to work, silly!');
+		const cmd = '>kick ';
+		const findargs = message.content.slice(cmd.length).trim().split(/ +/);
+		const member = message.mentions.members.first() || message.guild.members.cache.get(`${findargs[0]}`) || message.guild.members.cache.find(m => m.user.tag == `${findargs[0]}`);
+		if (!member) return message.channel.send('You need to find a member for this to work, silly! If you\'re using tags, remember that spaces in the tag will make it invalid.');
 		if (member.hasPermission('ADMINISTRATOR')) return message.channel.send('You cannot kick an administrator!');
 		if (member.kickable) {
-			const command = (`>kick <@${member.id}> `);
+			const command = (`>kick ${findargs[0]} `);
 			const args = message.content.slice(command.length).trim().split(/ -/);
 			const reason = args.join(' ') || 'none';
 			member.kick({ reason: `${reason}` }).catch(() => {

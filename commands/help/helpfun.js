@@ -1,12 +1,11 @@
 /* eslint-disable no-var */
 // eslint-disable-next-line no-unused-vars
 const Discord = require('discord.js');
-const { globalPrefix } = require('C:/Users/Owner/Documents/BirdyBirdy/config.json');
 
 module.exports = {
 	name: 'helpfun',
 	description: 'fun section of help command',
-	execute(message, client) {
+	async execute(message, client, globalPrefix) {
 		const embed = new Discord.MessageEmbed()
 			.setTitle('**Fun Commands**')
 			.setColor(0x00FF00)
@@ -19,13 +18,23 @@ module.exports = {
 
 **dog**: sends a random dog picture.
 
+**greg**: sends a picture from Diary of A Wimpy Kid with the message author's profile picture in it.
+
+**greg (member: guildMember)** sends a picture from Diary of A Wimpy Kid with the pinged member's profile picture on it.
+
 **meme**: posts a meme from a random meme subreddit to the channel. A 5 second cooldown applies to this command.
 
 **singlememe (args: args)** - makes a memeish embed using an argument. You could also make normal embeds with it I dunno.
 
-**picmeme (description: args[0]) | (imageurl: args[1])** - makes a memeish embed using arguments and urls. If you don't put a url or argument Birdy gets an error, boohoo.
+**picmeme (description: args[0]) | (imageurl: args[1])** - makes a memeish embed using arguments and urls. If you don't put a url or argument Birdy gives you an error, boohoo.
+
+**picmeme (description: args[0])** - makes a memeish embed using message attachments. You MUST put a message attachment if you don't want to use links or else Birdy will throw an error at you.
 
 **rr**: nothing to see here. If you want to use this command for nothing other than curiousity, just join a voice channel and use it. If you know what it already is, go ahead and use it on your friends or other online users in a voice channel.
+
+**sprite**: sends a picture of your profile picture on Lebron James holding a gun in a Sprite Cranberry commercial.
+
+**sprite (member: guildMember)** - sends a picture of the pinged member's profile picture on Lebron James holding a gun in a Sprite Cranberry commercial.
 
 **trickortreat**: You're an adult on Halloween. Some trick-or-treaters knock on your door, so it's time to give them a trick or a treat!
 
