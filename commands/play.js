@@ -86,13 +86,14 @@ module.exports = {
 					if (!message.guild.voice.selfDeaf) message.guild.voice.connection.voice.setSelfDeaf(true).then(() => console.log('Birdy deafened'));
 				});
 				server.dispatcher.on('finish', async () => {
-					if (server.loopvalue == false) server.queue.shift();
+					if (server.loopvalue == false && server.loopqueue == false) server.queue.shift();
+					if (server.loopvalue == false && server.loopqueue == true) server.queue.push(server.queue.shift());
 					switch(server.queue.length) {
 					case 0:
 						playingMap.delete(`${message.guild.id}`, 'Now Playing');
 						message.channel.send('The music is done!');
 						console.log(`Music now finished in ${message.guild.name}`);
-						if (server.loopvalue == true) server.loopvalue = false;
+						if (server.loopvalue != false) server.loopvalue = false;
 						break;
 					default:
 						playSong();

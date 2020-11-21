@@ -59,7 +59,7 @@ module.exports = {
 				case 0:
 					playingMap.delete(`${message.guild.id}`, 'Now Playing');
 					message.channel.send('The music is done!');
-					if (server.loopvalue == true) server.loopvalue = false;
+					if (server.loopvalue != false) server.loopvalue = false;
 					console.log(`Music now finished in ${message.guild.name}`);
 					break;
 				default:

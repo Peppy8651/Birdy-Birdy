@@ -8,8 +8,6 @@ module.exports = {
 		const embed = new Discord.MessageEmbed()
 			.setTitle('**New Timer**')
 			.setColor(0x00FF00)
-			// This next link is from https://emojipedia.org/messenger/1.0/alarm-clock/. It's not mine.
-			.setThumbnail('https://cdn.discordapp.com/attachments/760586962012471306/763397500702556160/alarm-clock_23f0.png')
 			.setDescription(`Please add a message below this embed of how much time you need.
 
 **How to type the amount of time you need**
@@ -27,16 +25,17 @@ After that, you will be asked to type a number, which will be the amount of time
 		message.channel.send(embed);
 		const timechoose = require('./timetype.json');
 		const timechooseitem = timechoose[Math.floor(Math.random() * timechoose.length)];
-		const timechoosefilter = response => {
-			return timechooseitem.answers.some(answer => answer.toLowerCase() === response.content.toLowerCase());
+		const users = [message.author.id];
+		const filter = response => {
+			return timechooseitem.answers.some(answer => answer.toLowerCase() == response.content.toLowerCase()) && users.some(a => a.toLowerCase() == response.author.id);
 		};
-		message.channel.awaitMessages(timechoosefilter, { max: 1, time: 15000, errors: ['time'] })
+		message.channel.awaitMessages(filter, { max: 1, time: 15000, errors: ['time'] })
 			.then(collected => {
-				if(collected.first().content === 'HOURS') {
+				if(collected.first().content.toLowerCase() == 'hours') {
 					const hoursquiz = require('./hours.json');
 					const hoursitem = hoursquiz[Math.floor(Math.random() * hoursquiz.length)];
 					const hoursfilter = response => {
-						return hoursitem.answers.some(answer => answer.toLowerCase() === response.content.toLowerCase());
+						return hoursitem.answers.some(answer => answer.toLowerCase() == response.content.toLowerCase()) && users.some(a => a.toLowerCase() == response.author.id);
 					};
 
 					message.channel.send(hoursitem.question).then(() => {
@@ -237,11 +236,11 @@ After that, you will be asked to type a number, which will be the amount of time
 							});
 					});
 				}
-				else if (collected.first().content === 'SECONDS') {
+				else if (collected.first().content.toLowerCase() == 'seconds') {
 					const secondsquiz = require('./minutes.json');
 					const secondsitem = secondsquiz[Math.floor(Math.random() * secondsquiz.length)];
 					const secondsfilter = response => {
-						return secondsitem.answers.some(answer => answer.toLowerCase() === response.content.toLowerCase());
+						return secondsitem.answers.some(answer => answer.toLowerCase() === response.content.toLowerCase()) && users.some(a => a.toLowerCase() == response.author.id);
 					};
 
 					message.channel.send(secondsitem.question).then(() => {
@@ -731,11 +730,11 @@ After that, you will be asked to type a number, which will be the amount of time
 							});
 					});
 				}
-				else if(collected.first().content === 'MINUTES') {
+				else if(collected.first().content.toLowerCase() == 'minutes') {
 					const minutesquiz = require('./minutes.json');
 					const minutesitem = minutesquiz[Math.floor(Math.random() * minutesquiz.length)];
 					const minutesfilter = response => {
-						return minutesitem.answers.some(answer => answer.toLowerCase() === response.content.toLowerCase());
+						return minutesitem.answers.some(answer => answer.toLowerCase() === response.content.toLowerCase()) && users.some(a => a.toLowerCase() == response.author.id);
 					};
 
 					message.channel.send(minutesitem.question).then(() => {

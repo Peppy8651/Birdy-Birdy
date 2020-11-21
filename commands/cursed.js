@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable indent */
 const Discord = require('discord.js');
-const fetch = require('node-fetch');
+const miniget = require('miniget');
 
 module.exports = {
     name: 'cursed',
@@ -11,9 +11,10 @@ module.exports = {
 	async execute(message) {
         const subreddits = ['cursedmemes', 'cursed_cats', 'Cursed_Images', 'CursedMinecraft'];
         const randomsub = subreddits[Math.floor(Math.random() * subreddits.length)];
-        fetch(`https://api.reddit.com/r/${randomsub}/hot.json?count=2&sort=hot&t=week&limit=100`).then(response => response.json()).then(response => {
+        miniget(`https://api.reddit.com/r/${randomsub}/hot.json?count=2&sort=hot&t=week&limit=100`, { headers:{ 'User-Agent':'a/b' } }).text().then(res => {
             const postnum = Math.floor(Math.random() * 100);
             var x = Math.floor(Math.random() * 30);
+            const response = JSON.parse(res);
                 const embed = new Discord.MessageEmbed()
                     .setAuthor(`${response.data.children[postnum].data.subreddit_name_prefixed} • Posted by u/${response.data.children[postnum].data.author}`)
                     .setColor(0xFF4500)

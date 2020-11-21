@@ -75,11 +75,12 @@ module.exports = {
 				if (!message.guild.voice.selfDeaf) connection.voice.setSelfDeaf(true).then(() => console.log('Birdy deafened'));
 			});
 			server.dispatcher.on('finish', async () => {
-				if (server.loopvalue === false) server.queue.shift();
+				if (server.loopvalue == false && server.loopqueue == false) server.queue.shift();
+				if (server.loopvalue == false && server.loopqueue == true) server.queue.push(server.queue.shift());
 				if (server.queue.length == 0) {
 					message.channel.send('The music is done!');
 					playingMap.delete(`${message.guild.id}`, 'Now Playing');
-					if (server.loopvalue == true) server.loopvalue = false;
+					if (server.loopvalue != false) server.loopvalue = false;
 					return console.log(`Music now finished in ${message.guild.name}`);
 				}
 				else {

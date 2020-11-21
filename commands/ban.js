@@ -20,7 +20,7 @@ module.exports = {
 			const embed = new Discord.MessageEmbed()
 				.setTitle('**Ban**')
 				.setColor(0xFF0000)
-				.setThumbnail(member.user.displayAvatarURL())
+				.setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
 				.setDescription(`**${member}** was **banned** by **${message.author}**!`)
 				.addFields(
 					{ name: 'Reason', value: reason },

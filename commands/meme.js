@@ -2,24 +2,25 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable indent */
 const Discord = require('discord.js');
-const fetch = require('node-superfetch');
+const got = require('got');
 
 module.exports = {
     name: 'meme',
-    cooldown: 5,
+    cooldown: 2.5,
     description: 'meme command that fetches memes from reddit',
 	async execute(message) {
         const subreddits = ['memes', 'dankmemes'];
         const randomsub = subreddits[Math.floor(Math.random() * subreddits.length)];
-        const { body } = await fetch.get(`https://reddit.com/r/${randomsub}/hot.json?count=2&sort=hot&t=week&limit=100`);
-            const postnum = Math.floor(Math.random() * 100);
+        const response = await got(`https://api.reddit.com/r/${randomsub}/random/.json`);
+        const content = JSON.parse(response.body);
+            const postnum = 0;
             var x = Math.floor(Math.random() * 30);
                 const embed = new Discord.MessageEmbed()
-                    .setAuthor(`${body.data.children[postnum].data.subreddit_name_prefixed} • Posted by u/${body.data.children[postnum].data.author}`)
+                    .setAuthor(`${content[0].data.children[0].data.subreddit_name_prefixed} • Posted by u/${content[0].data.children[0].data.author}`)
                     .setColor(0xFF4500)
-                    .setTitle(`**${body.data.children[postnum].data.title}**`)
-                    .setURL(`https://www.reddit.com${body.data.children[postnum].data.permalink}`)
-                    .setImage(body.data.children[postnum].data.url_overridden_by_dest)
+                    .setTitle(`**${content[0].data.children[0].data.title}**`)
+                    .setURL(`https://www.reddit.com${content[0].data.children[0].data.permalink}`)
+                    .setImage(content[0].data.children[0].data.url_overridden_by_dest)
                     .setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
                 message.channel.send(embed);
             if (x === 15) {

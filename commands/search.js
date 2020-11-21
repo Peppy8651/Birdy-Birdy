@@ -60,8 +60,9 @@ module.exports = {
 			.setTimestamp();
 		message.channel.send(embed);
 		const item = ['1', '2', '3', '4', '5', 'cancel'];
+		const users = [message.author.id];
 		const filter = response => {
-			return item.some(answer => answer.toLowerCase() == response.content.toLowerCase());
+			return item.some(answer => answer.toLowerCase() == response.content.toLowerCase()) && users.some(a => a.toLowerCase() == response.author.id);
 		};
 		message.channel.awaitMessages(filter, { max: 1, time: 15000, errors: ['time'] })
 			.then(async collected => {
@@ -123,13 +124,14 @@ module.exports = {
 							if (!message.guild.voice.selfDeaf) message.guild.voice.connection.voice.setSelfDeaf(true).then(() => console.log('Birdy deafened'));
 						});
 						server.dispatcher.on('finish', async () => {
-							if (server.loopvalue == false) server.queue.shift();
+							if (server.loopvalue == false && server.loopqueue == false) server.queue.shift();
+							if (server.loopvalue == false && server.loopqueue == true) server.queue.push(server.queue.shift());
 							switch(server.queue.length) {
 							case 0:
 								playingMap.delete(`${message.guild.id}`, 'Now Playing');
 								message.channel.send('The music is done!');
 								console.log(`Music now finished in ${message.guild.name}`);
-								if (server.loopvalue == true) server.loopvalue = false;
+								if (server.loopvalue != false) server.loopvalue = false;
 								break;
 							default:
 								playSong();

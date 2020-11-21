@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 /* eslint-disable no-undef */
 /* eslint-disable no-inline-comments */
 /* eslint-disable prefer-const */
@@ -11,6 +12,13 @@ const { token } = require('./config.json');
 client.setMaxListeners(100);
 client.commands = new Discord.Collection();
 var servers = {};
+// eslint-disable-next-line no-unused-vars
+async function BetaCheck(msg) {
+	const Cobras = await client.guilds.fetch('774316995897982980');
+	const LS = await client.guilds.fetch('699461818422394910');
+	const DFMD = await client.guilds.fetch('615884282040287242');
+	if (msg.guild.id != Cobras.id && msg.guild.id != LS.id && msg.guild.id != DFMD.id) return message.channel.send('This command is currently being tested and cannot be used outside of featured servers.');
+}
 
 client.on('guildCreate', async guild => {
 	console.log(`Was added to ${guild.name}!`);
@@ -25,6 +33,15 @@ client.on('message', message => {
 			communism: false,
 			queue: [],
 			loopvalue: false,
+			loopqueue: false,
+			snipe: [],
+			editsnipe: [],
+			turkeyfight: {
+				players: [],
+				playersconstant: [],
+				playing: false,
+				turn: null,
+			},
 		};
 	}
 });
@@ -40,48 +57,39 @@ for (const file of commandFiles) {
 }
 
 const cooldowns = new Discord.Collection();
+const activityupdate = null;
+const activityname = '>help';
+const BirdyActivity = activityupdate == undefined ? `${activityname}` : activityupdate == null ? `${activityname}` : `${activityname} | ${activityupdate}`;
 
-client.login(`${token}`).then(() => {
+client.on('ready', async () => {
 	console.log('Ready!');
 	console.log(`Logged in as ${client.user.tag}`);
 	console.log(`${client.user.tag} is in ${client.guilds.cache.size} servers`);
-	client.user.setActivity(`${globalPrefix}help`, {
+	client.user.setActivity(BirdyActivity, {
 		type: 'LISTENING',
-		name: `**${globalPrefix}help**`,
+		name: BirdyActivity,
 	});
 });
+
+client.login(`${token}`);
 
 process.on('unhandledRejection', async error => {
 	console.error('Unhandled promise rejection:', error);
 });
-
 client.on('message', async (message) => {
 	if (!message.guild) return;
-	client.helpcommands = new Discord.Collection();
-	const helpcommandFiles = fs.readdirSync('./commands/help').filter(file => file.endsWith('.js'));
-
-	for (const file of helpcommandFiles) {
-		const helpcommand = require(`./commands/help/${file}`);
-
-		// set a new item in the Collection
-		// with the key as the command name and the value as the exported module
-		client.helpcommands.set(helpcommand.name, helpcommand);
-	}
-	if(message.author.id === client.user.id) return;
-	if (message.content.toLowerCase() === globalPrefix + 'help') {
-		client.helpcommands.get('help').execute(message, client, globalPrefix);
-	}
-	else if (message.content.toLowerCase().startsWith('>help' + ' info')) {
-		client.helpcommands.get('helpinfo').execute(message, client, globalPrefix);
-	}
-	else if (message.content.toLowerCase().startsWith('>help' + ' fun')) {
-		client.helpcommands.get('helpfun').execute(message, client, globalPrefix);
-	}
-	else if (message.content.toLowerCase().startsWith('>help' + ' misc')) {
-		client.helpcommands.get('helpmisc').execute(message, client, globalPrefix);
-	}
-	else if (message.content.toLowerCase().startsWith('>help' + ' music')) {
-		client.helpcommands.get('helpmusic').execute(message, client, globalPrefix);
+	if(message.author.id == client.user.id) return;
+	if (message.content.toLowerCase().startsWith(globalPrefix + 'help')) {
+		const command = '>help ';
+		const args = message.content.slice(command.length).trim().split(/ +/);
+		const action = args[0];
+		if (!action) return client.commands.get('help').execute(message, client, globalPrefix);
+		if (action.toLowerCase() == 'define') {
+			client.commands.get('helpdefine').execute(message, args, client);
+		}
+		else {
+			client.commands.get('help').execute(message, client, globalPrefix);
+		}
 	}
 });
 const PEPPY_ID = '490548233601417223';
@@ -136,8 +144,8 @@ client.on('message', async message => {
 	if(!message.guild) return;
 	if(message.author.id === client.user.id) return;
 	if(message.content.toLowerCase().startsWith(globalPrefix + 'kick')) {
-		if (!message.guild.me.hasPermission('ADMINISTRATOR')) return message.channel.send('Sorry, can\'t kick anybody without the ADMINISTRATOR permission.');
-		if (!message.member.hasPermission('ADMINISTRATOR')) return message.channel.send('You don\'t have the permissions to use this command!');
+		if (!message.guild.me.hasPermission('ADMINISTRATOR') && !message.guild.me.hasPermission('KICK_MEMBERS')) return message.channel.send('Sorry, can\'t kick anybod since I don\'t have the permissions to.');
+		if (!message.member.hasPermission('ADMINISTRATOR') && !message.member.hasPermission('KICK_MEMBERS')) return message.channel.send('You don\'t have the permissions to use this command!');
 		client.commands.get('kick').execute(message);
 	}
 });
@@ -146,8 +154,8 @@ client.on('message', async message => {
 	if(!message.guild) return;
 	if(message.author.id === client.user.id) return;
 	if(message.content.toLowerCase().startsWith(globalPrefix + 'ban')) {
-		if (!message.guild.me.hasPermission('ADMINISTRATOR')) return message.channel.send('Sorry, can\'t ban anybody without the ADMINISTRATOR permission.');
-		if (!message.member.hasPermission('ADMINISTRATOR')) return message.channel.send('You don\'t have the permissions to use this command!');
+		if (!message.guild.me.hasPermission('ADMINISTRATOR') && !message.guild.me.hasPermission('BAN_MEMBERS')) return message.channel.send('Sorry, can\'t ban anybody since I don\'t have the permissions to.');
+		if (!message.member.hasPermission('ADMINISTRATOR') && !message.member.hasPermission('BAN_MEMBERS')) return message.channel.send('You don\'t have the permissions to use this command!');
 		client.commands.get('ban').execute(message);
 	}
 });
@@ -223,7 +231,7 @@ client.on('message', async message => {
 			if (!args[1].includes('?')) img = image;
 		}
 		if (message.attachments.first()) {
-			img = message.attachments.first().url;
+			img = message.attachments.first().proxyURL;
 		}
 		try {
 			const embed = new Discord.MessageEmbed()
@@ -355,9 +363,7 @@ client.on('message', async message => {
 		}
 		if (isNaN(amount)) return message.channel.send('This isn\'t a valid number!');
 		if(amount > 99 || amount < 1) return message.channel.send('You can\'t delete this number of messages!');
-		// eslint-disable-next-line no-shadow
-		// eslint-disable-next-line no-unused-vars
-		message.channel.bulkDelete(amount + 1, true).then(async m => {
+		message.channel.bulkDelete(amount + 1, true).then(async () => {
 			const msg = await message.channel.send(`Deleted ${amount} messages!`);
 			setTimeout(() => {
 				msg.delete().catch(() => console.log('Sorry, couldn\'t delete message'));
@@ -504,44 +510,10 @@ client.on('message', async message => {
 		const args = message.content.slice(command.length).trim().split(/ +/);
 		const value = args[0];
 		const server = servers[message.guild.id];
-		// eslint-disable-next-line no-inner-declarations
-		async function loop(loopparam) {
-			if (loopparam == undefined) {
-				if (server.loopvalue == true) {
-					server.loopvalue = false;
-					console.log(`Loop set to ${server.loopvalue}`);
-				}
-				else if(server.loopvalue == false) {
-					server.loopvalue = true;
-					console.log(`Loop set to ${server.loopvalue}`);
-				}
-			}
-			else if (loopparam == true) {
-				server.loopvalue = true;
-				console.log(`Loop set to ${server.loopvalue}`);
-			}
-			else if (loopparam == false) {
-				server.loopvalue = false;
-				console.log(`Loop set to ${server.loopvalue}`);
-			}
-		}
-		if (value.includes('true')) {
-			loop(true);
-			message.channel.send('🔁 Looping... 🔁');
-		}
-		else if (value.includes('false')) {
-			loop(false);
-			message.channel.send('↪️ No longer looping. ↪️');
-		}
-		else {
-			loop();
-			if (server.loopvalue == true) message.channel.send('🔁 Looping... 🔁');
-			if (server.loopvalue == false) message.channel.send('↪️ No longer looping. ↪️');
-		}
+		client.commands.get('loop').execute(message, server, args, value);
 	}
 });
 
-const ytdl = require('ytdl-core');
 // const ytsr = require('ytsr');
 const playingMap = new Map();
 client.on('message', async message => {
@@ -586,7 +558,7 @@ client.on('message', async message => {
 		const server = servers[message.guild.id];
 		message.guild.voice.connection.dispatcher.destroy();
 		message.channel.send('⏹️ Music content stopped successfully ⏹️');
-		if (server.loopvalue != false) server.loopvalue == false;
+		if (server.loopvalue != false) server.loopvalue = false;
 		server.queue.splice(0, server.queue.length);
 		playingMap.delete(message.guild.id, 'Now Playing');
 	}
@@ -611,7 +583,7 @@ client.on('message', async message => {
 			let embed;
 			for(let i = 0; i < server.queue.length; i++) {
 				const queueNumber = i + 1;
-				URLtitles.push(`${queueNumber}. **[${server.queue[0].title}](${server.queue[0].url})**: ${server.queue[0].duration}`);
+				URLtitles.push(`${queueNumber}. **[${server.queue[i].title}](${server.queue[i].url})**: ${server.queue[i].duration}`);
 			}
 			embed = new Discord.MessageEmbed()
 				.setTitle('Current Queue')
@@ -642,9 +614,8 @@ client.on('message', async message => {
 		if (amountnum == 1) return message.channel.send('But why would you want to cut out the song that\'s currently playing? Just wait for it to finish or use >skip!');
 		const clearcount = amountnum - 1;
 		if (server.queue[clearcount] == undefined) return message.channel.send('This video is not in the queue!');
-		const clearedInfo = await ytdl.getBasicInfo(`${server.queue[clearcount]}`);
+		message.channel.send(`Cut **${server.queue[clearcount].title}** out of queue.`);
 		server.queue.splice(clearcount, 1);
-		message.channel.send(`Cut **${clearedInfo.videoDetails.title}** out of queue.`);
 	}
 });
 
@@ -655,15 +626,9 @@ client.on('message', message => {
 		if (!message.member.voice.channel) return message.channel.send('You cannot perform this command outside a voice channel.');
 		if (!message.guild.me.voice.channel) return message.channel.send('I\'m not in a channel so I can\'t leave.');
 		if (playingMap.has(`${message.guild.id}`, 'Now Playing')) return message.channel.send('Sorry, but I can\'t let you disconnect me from a voice channel while I\'m playing.');
-		try {
-			message.guild.voice.connection.disconnect();
-		}
-		catch (error) {
-			message.guild.voice.channel.leave();
-		}
-		finally {
-			loopvalue = false;
-		}
+		message.guild.voice.channel.leave();
+		const server = servers[message.guild.id];
+		if (server.loopvalue != false) server.loopvalue = false;
 		message.channel.send('Ok, see you soon.');
 	}
 });
@@ -676,15 +641,15 @@ client.on('message', async message => {
 		if (playingMap.has(`${message.guild.id}`, 'Now Playing') == false) return message.channel.send('There isn\'t anything playing in this server.');
 		if (message.member.voice.channelID != message.guild.me.voice.channelID) return message.channel.send('Doesn\'t look like there is anything playing in this channel.');
 		const server = servers[message.guild.id];
-		let value;
-		if (server.loopvalue == true) value = 'Yes';
-		if (server.loopvalue == false) value = 'No';
+		const value = server.loopvalue == true ? 'Yes' : 'No';
+		const queuevalue = server.loopqueue == true ? 'Yes' : 'No';
 		const embed = new Discord.MessageEmbed()
 			.setTitle('**Currently Playing**')
 			.setColor(0xFF0000)
 			.setThumbnail(server.queue[0].thumbnail)
 			.addFields(
 				{ name: 'Looping?', value: value, inline: true },
+				{ name: 'Looping Queue?', value: queuevalue, inline: true },
 			)
 			.setDescription(`**[${server.queue[0].title}](${server.queue[0].url})**: ${server.queue[0].duration}`)
 			.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
@@ -726,14 +691,14 @@ client.on('message', async message => {
 	if (message.content.toLowerCase().startsWith(globalPrefix + 'greg')) {
 		const command = '>greg ';
 		const args = message.content.slice(command.length).trim().split(/ -/);
-		const member = message.mentions.members.first() || message.guild.members.cache.get(`${args[0]}`) || message.guild.members.cache.find(m => m.user.tag == `${args[0]}`);
+		const user = message.mentions.users.first() || client.users.cache.get(`${args[0]}`) || client.users.cache.find(u => u.tag == `${args[0]}`);
 		const canvas = Canvas.createCanvas(1289, 1024);
 		const ctx = canvas.getContext('2d');
-		const background = await Canvas.loadImage('./greg.png');
+		const background = await Canvas.loadImage('./image assets/greg.png');
 		ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 		let avatar;
-		if (member) avatar = await Canvas.loadImage(member.user.displayAvatarURL({ format: 'png' }));
-		if (!member) avatar = await Canvas.loadImage(message.author.displayAvatarURL({ format: 'png' }));
+		if (user) avatar = await Canvas.loadImage(user.displayAvatarURL({ format: 'png' }));
+		if (!user) avatar = await Canvas.loadImage(message.author.displayAvatarURL({ format: 'png' }));
 		ctx.drawImage(avatar, 315, 240, 250, 250);
 		const attachment = new Discord.MessageAttachment(canvas.toBuffer(), 'greggyboy.png');
 		message.channel.send(attachment);
@@ -746,14 +711,14 @@ client.on('message', async message => {
 	if (message.content.toLowerCase().startsWith(globalPrefix + 'sprite')) {
 		const command = '>sprite ';
 		const args = message.content.slice(command.length).trim().split(/ -/);
-		const member = message.mentions.members.first() || message.guild.members.cache.get(`${args[0]}`) || message.guild.members.cache.find(m => m.user.tag == `${args[0]}`);
+		const user = message.mentions.users.first() || client.users.cache.get(`${args[0]}`) || client.users.cache.find(u => u.tag == `${args[0]}`);
 		const canvas = Canvas.createCanvas(600, 336);
 		const ctx = canvas.getContext('2d');
-		const background = await Canvas.loadImage('./sprite.jpg');
+		const background = await Canvas.loadImage('./image assets/sprite.png');
 		ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 		let avatar;
-		if (member) avatar = await Canvas.loadImage(member.user.displayAvatarURL({ format: 'png' }));
-		if (!member) avatar = await Canvas.loadImage(message.author.displayAvatarURL({ format: 'png' }));
+		if (user) avatar = await Canvas.loadImage(user.displayAvatarURL({ format: 'png' }));
+		if (!user) avatar = await Canvas.loadImage(message.author.displayAvatarURL({ format: 'png' }));
 		ctx.drawImage(avatar, 290, 10, 170, 170);
 		const attachment = new Discord.MessageAttachment(canvas.toBuffer(), 'sprite.png');
 		message.channel.send(attachment);
@@ -784,8 +749,8 @@ client.on('message', async message => {
 			.setAuthor('You have been invited to join a server')
 			.setTitle(`${message.guild.name}`)
 			.setDescription(`${message.guild.members.cache.filter(m => m.presence.status == 'online').size} Online, ${message.guild.memberCount} Members, **[Click here to join](${Invite.url})**`)
-			.setThumbnail(message.guild.iconURL())
-			.setImage(message.guild.bannerURL())
+			.setThumbnail(message.guild.iconURL({ dynamic: true }))
+			.setImage(message.guild.bannerURL({ dynamic: true }))
 			.setFooter(`Invite sent by ${message.author.tag}`, message.author.displayAvatarURL())
 			.setTimestamp();
 		if (!user && !args[0]) message.channel.send(embed);
@@ -794,5 +759,191 @@ client.on('message', async message => {
 		if (user) {
 			user.send(`Hi! ${message.author} sent you an invite! If you want to, go ahead and click the blue text to join! If you think this was a mistake or unintended, just ignore it.`, embed).then(() => message.channel.send(`Sent invite to **${user.tag}**`)).catch(() => message.channel.send('Sorry, couldn\'t send the invite to them. Make sure that they allow all messages in their DMs.'));
 		}
+	}
+});
+
+client.on('messageDelete', message => {
+	if (!message.guild) return;
+	const server = servers[message.guild.id];
+	const time = new Date();
+	const timefiltered = `${time.getMonth() + 1}/${time.getDate()}/${time.getFullYear()}`;
+	let img;
+	h = time.getHours();
+	const ampm = h > 12 ? 'PM' : 'AM';
+	const hours = h > 12 ? h - 12 : h;
+	const m = time.getMinutes();
+	const minutes = m < 10 ? '0' + `${m}` : m == 0 ? '00' : m;
+	const stamp = `${hours}:${minutes} ${ampm}`;
+	if (!message.attachments.first()) img = undefined;
+	if (message.attachments.first()) img = message.attachments.first().proxyURL;
+	const msg = {
+		content: message.content,
+		channel: message.channel,
+		member: message.member,
+		author: message.author,
+		guild: message.guild,
+		time: timefiltered,
+		timestamp: stamp,
+		image: img,
+	};
+	if (!server.snipe[0]) server.snipe.push(msg);
+	if (server.snipe[0]) {
+		server.snipe.splice(0, server.snipe.length);
+		server.snipe.push(msg);
+	}
+});
+
+client.on('message', async message => {
+	if (!message.guild) return;
+	if (message.content.toLowerCase().startsWith(globalPrefix + 'snipe')) {
+		const server = servers[message.guild.id];
+		if (!server.snipe[0]) return message.channel.send('Nothing to snipe. Remember that someone needs to delete a message in this server in order to be sniped.');
+		const { snipe } = server;
+		if (!snipe[0].content && !snipe[0].image) return message.channel.send('This message seems to be empty.').then(snipe.splice(0, snipe.length));
+		if (snipe[0].content == '' && !snipe[0].image) return message.channel.send('This message seems to be empty.').then(snipe.splice(0, snipe.length));
+		const embed = new Discord.MessageEmbed()
+			.setTitle('Sniped Message')
+			.setAuthor(`${snipe[0].author.tag}`, snipe[0].author.displayAvatarURL())
+			.setColor(snipe[0].member.displayHexColor)
+			.setDescription(`${snipe[0].content}`)
+			.addFields(
+				{ name: 'Deleted on', value: `${snipe[0].time} at ${snipe[0].timestamp} CT`, inline: true },
+				{ name: 'Channel', value: snipe[0].channel, inline: true },
+			)
+			.setImage(snipe[0].image)
+			.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
+			.setTimestamp();
+		message.channel.send(embed).catch(() => message.channel.send('Sorry, couldn\'t snipe successfully.'));
+	}
+});
+
+client.on('message', async message => {
+	if (!message.guild) return;
+	if (message.content.toLowerCase().startsWith(globalPrefix + 'reddit')) {
+		const command = await client.commands.get('reddit');
+		if (!cooldowns.has(command.name)) {
+			cooldowns.set(command.name, new Discord.Collection());
+		}
+		const now = Date.now();
+		const timestamps = cooldowns.get(command.name);
+		const cooldownAmount = (command.cooldown || 3) * 1000;
+		if (timestamps.has(message.author.id)) {
+			const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+			if (now < expirationTime) {
+				const timeLeft = (expirationTime - now) / 1000;
+				return message.channel.send(`WOAH WOAH WOAH! Calm down there, buddy. We need to wait ${timeLeft.toFixed(1)} more second(s) before searching another subreddit. It shouldn't be that much...`);
+			}
+		}
+		timestamps.set(message.author.id, now);
+		setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+		client.commands.get('reddit').execute(message);
+	}
+});
+
+client.on('message', async message => {
+	if (!message.guild) return;
+	if (message.content.toLowerCase().startsWith(globalPrefix + 'changelog')) {
+		client.commands.get('changelog').execute(message, client, version);
+	}
+});
+
+client.on('message', async message => {
+	if (!message.guild) return;
+	if (message.content.toLowerCase().startsWith(globalPrefix + 'suggest')) {
+		const Peppy = await client.users.fetch(`${PEPPY_ID}`);
+		const embed = new Discord.MessageEmbed()
+			.setTitle('Suggesting')
+			.setThumbnail(client.user.displayAvatarURL())
+			.setColor(0x00FF00)
+			.setDescription('Have a suggestion? DM my owner on Discord or make an issue with your suggestion on the Github Repository! He is usually open to suggestions since he always needs new ideas for Birdy Birdy!')
+			.addFields(
+				{ name: 'Discord', value: Peppy, inline: true },
+				{ name: 'Github', value: '[Birdy\'s Repo](https://github.com/Peppy8651/Birdy-Birdy/issues/)', inline: true },
+			)
+			.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
+			.setTimestamp();
+		message.channel.send(embed);
+	}
+});
+
+client.on('message', async message => {
+	if (!message.guild) return;
+	if (message.content.toLowerCase().startsWith(globalPrefix + 'log')) {
+		const command = '>log ';
+		const args = message.content.slice(command.length).trim().split(/ -/);
+		const catchinput = args.join(' ');
+		const input = !catchinput ? 'You need to add arguments to use this command' : catchinput;
+		const colors = ['CSS', 'fix', 'yaml', 'brainfuck', 'ini', 'css', null];
+		const color = colors[Math.floor(Math.random() * colors.length)];
+		const inp = color == 'ini' ? `[${input}]` : color == 'css' ? `[${input}]` : input;
+		const outputcolored = `\`\`\`${color}
+${inp} \`\`\``;
+		const outputnotcolored = `\`\`\`${inp} \`\`\``;
+		const output = color == null ? outputnotcolored : outputcolored;
+		message.channel.send(output);
+	}
+});
+
+client.on('message', async message => {
+	if (!message.guild) return;
+	if (message.content.toLowerCase().startsWith(globalPrefix + 'turkeyfight')) {
+		const server = servers[message.guild.id];
+		if (server.turkeyfight.playing == true) return message.channel.send('There is already two people turkeyfighting in this server!');
+		const member = message.mentions.members.first();
+		if (!member) return message.channel.send('You need to ping a member to start turkeyfighting!');
+		if (member.user.id == message.author.id) return message.channel.send('Ok you punch yourself and die game over.');
+		if (member.user.id == client.user.id) return message.channel.send('I will destroy you immediately. Don\'t challenge a bot.');
+		if (member.user.bot) {
+			const embed = new Discord.MessageEmbed();
+			embed.setTitle('Seriously, why are you fighting bots?');
+			embed.setColor('PURPLE');
+			embed.setDescription(`Leaked footage of ${message.author} turkeyfighting a bot:`);
+			embed.setImage('https://media1.tenor.com/images/7bceb53c8046319b0016443cb1947a94/tenor.gif?itemid=18667615');
+			embed.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
+			embed.setTimestamp();
+			return message.channel.send(embed);
+		}
+		client.commands.get('turkey').execute(message, server, member);
+	}
+});
+
+client.on('message', async message => {
+	if (!message.guild) return;
+	if (message.content.toLowerCase().startsWith(globalPrefix + 'turkeystats')) {
+		const server = servers[message.guild.id];
+		if (server.turkeyfight.playing != true) return message.channel.send('There isn\'t anyone playing Turkey Fight in this server...');
+		const embed = new Discord.MessageEmbed()
+			.setTitle('Current Turkey Fight Game')
+			.setThumbnail(message.guild.iconURL())
+			.setColor('BLUE')
+			.addFields(
+				{ name: 'Players', value: `${server.turkeyfight.playersconstant[0].player}
+${server.turkeyfight.playersconstant[1].player}`, inline: true },
+				{ name: 'Health Stats', value: `${server.turkeyfight.players[0].player}: ${server.turkeyfight.players[0].health}
+${server.turkeyfight.players[1].player}: ${server.turkeyfight.players[1].health}`, inline: true },
+				{ name: 'Current Turn', value: server.turkeyfight.turn, inline: true },
+			)
+			.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
+			.setTimestamp();
+		message.channel.send(embed);
+	}
+});
+
+client.on('message', async message => {
+	if (!message.guild) return;
+	if (message.content.toLowerCase().startsWith(globalPrefix + 'fortune')) {
+		const f = require('./commands/fortunes.json');
+		const fortune = f.fortunes[Math.floor(Math.random() * f.fortunes.length)];
+		const embed = new Discord.MessageEmbed()
+		.setTitle('Fortune Cookie')
+		.setColor('RANDOM')
+		.setThumbnail(client.user.displayAvatarURL())
+		.setDescription('Follow this wisdom and let it improve who you are unless it states you don\'t need improvement.')
+		.addFields(
+			{ name: 'Your Fortune', value: fortune },
+		)
+		.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
+		.setTimestamp();
+		message.channel.send(embed);
 	}
 });
