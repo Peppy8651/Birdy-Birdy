@@ -14,8 +14,8 @@ module.exports = {
 		const pub = published.slice(1);
 		const p = pub.slice(0, 10);
 		const des = JSON.stringify(res.body);
-		const description = des.length > 2045 ? des.slice(1, 2044) : res.body;
-		if (des.length < 2045) des.slice(1, 2044);
+		const d = des.slice(1, 2044);
+		const description = des.length > 2045 ? d : res.body;
 		const pre = res.prerelease == true ? 'Yes' : 'No';
 		const embed = new MessageEmbed()
 			.setTitle(res.name)
