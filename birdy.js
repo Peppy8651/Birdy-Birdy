@@ -34,6 +34,8 @@ client.on('message', message => {
 			communism: false,
 			queue: [],
 			loopvalue: false,
+			loopcount: 0,
+			errorcount: 0,
 			loopqueue: false,
 			snipe: [],
 			editsnipe: [],
@@ -521,7 +523,7 @@ client.on('message', async message => {
 			client.commands.get('plplay').execute(message, server, playingMap);
 		}
 		else {
-			client.commands.get('play').execute(message, server, playingMap);
+			client.commands.get('play').execute(message, servers, playingMap);
 		}
 	}
 });
@@ -535,8 +537,7 @@ client.on('message', async message => {
 		if (message.member.voice.channel.id != message.guild.me.voice.channel.id) return message.channel.send('Looks like there isn\'t anything playing in this channel.');
 		const command = '>skip ';
 		const args = message.content.slice(command.length).trim().split(/ +/);
-		const server = servers[message.guild.id];
-		client.commands.get('skip').execute(message, server, args);
+		client.commands.get('skip').execute(message, servers, args);
 	}
 });
 
@@ -550,6 +551,7 @@ client.on('message', async message => {
 		const server = servers[message.guild.id];
 		message.guild.voice.connection.dispatcher.destroy();
 		message.channel.send('⏹️ Music content stopped successfully ⏹️');
+		if (server.loopvalue != false) server.loopcount = 0;
 		if (server.loopvalue != false) server.loopvalue = false;
 		if (server.loopqueue != false) server.loopqueue = false;
 		server.queue.splice(0, server.queue.length);
@@ -621,6 +623,7 @@ client.on('message', message => {
 		if (playingMap.has(`${message.guild.id}`, 'Now Playing')) return message.channel.send('Sorry, but I can\'t let you disconnect me from a voice channel while I\'m playing.');
 		message.guild.voice.channel.leave();
 		const server = servers[message.guild.id];
+		if (server.loopvalue != false) server.loopcount = 0;
 		if (server.loopvalue != false) server.loopvalue = false;
 		if (server.loopqueue != false) server.loopqueue = false;
 		message.channel.send('Ok, see you soon.');
@@ -635,15 +638,15 @@ client.on('message', async message => {
 		if (playingMap.has(`${message.guild.id}`, 'Now Playing') == false) return message.channel.send('There isn\'t anything playing in this server.');
 		if (message.member.voice.channelID != message.guild.me.voice.channelID) return message.channel.send('Doesn\'t look like there is anything playing in this channel.');
 		const server = servers[message.guild.id];
-		const value = server.loopvalue == true ? 'Yes' : 'No';
-		const queuevalue = server.loopqueue == true ? 'Yes' : 'No';
+		const value = server.loopvalue == true ? server.loopqueue == true ? 'Song & Queue' : 'Song' : server.loopqueue == true ? 'Queue' : 'No' ;
 		const embed = new Discord.MessageEmbed()
 			.setTitle('**Currently Playing**')
 			.setColor(0xFF0000)
 			.setThumbnail(server.queue[0].thumbnail)
 			.addFields(
 				{ name: 'Looping?', value: value, inline: true },
-				{ name: 'Looping Queue?', value: queuevalue, inline: true },
+				{ name: 'Duration', value: server.queue[0].duration, inline: true },
+				{ name: 'Upload Date', value: server.queue[0].uploadDate, inline: true },
 			)
 			.setDescription(`**[${server.queue[0].title}](${server.queue[0].url})**: ${server.queue[0].duration}`)
 			.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())

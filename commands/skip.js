@@ -4,11 +4,13 @@ const Discord = require('discord.js');
 module.exports = {
 	name: 'skip',
 	description: 'skip command for Birdy Birdy',
-	async execute(message, server, args) {
+	async execute(message, servers, args) {
+		const server = servers[message.guild.id];
 		if (!args[0]) {
 			if (server.loopvalue == true) {
 				server.queue.shift();
 				message.guild.voice.connection.dispatcher.end();
+				server.loopcount = 0;
 				message.channel.send('⏩ Skipped! ⏩');
 			}
 			else {
@@ -24,6 +26,7 @@ module.exports = {
 				if (server.loopvalue == true) {
 					server.queue.shift();
 					message.guild.voice.connection.dispatcher.end();
+					server.loopcount = 0;
 					message.channel.send('⏩ Skipped! ⏩');
 				}
 				else {
@@ -35,6 +38,7 @@ module.exports = {
 				if (server.loopvalue == true) {
 					server.queue.shift();
 					message.guild.voice.connection.dispatcher.end();
+					server.loopcount = 0;
 					message.channel.send('⏩ Skipped! ⏩');
 				}
 				else {
@@ -47,6 +51,7 @@ module.exports = {
 				server.queue.shift();
 				server.queue.splice(1, amount);
 				message.guild.voice.connection.dispatcher.end();
+				server.loopcount = 0;
 				message.channel.send('⏩ Skipped! ⏩');
 			}
 			else if (server.loopqueue == true) {

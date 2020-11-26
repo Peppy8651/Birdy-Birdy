@@ -105,18 +105,22 @@ module.exports = {
 						const stream = ytdl(`${server.queue[0].url}`, { filter: 'audioonly' });
 						server.dispatcher = message.guild.voice.connection.play(stream);
 						server.dispatcher.on('start', async () => {
+							if (server.errorcount != 0) server.errorcount = 0;
+							if (server.loopvalue == true) server.loopcount++;
 							const embed1 = new Discord.MessageEmbed()
 								.setAuthor(`${info.videoDetails.author.name} on Youtube`)
 								.setTitle('**Now Playing**')
 								.setDescription(`**[${server.queue[0].title}](${server.queue[0].url})**`)
 								.setColor(0xFF0000)
-								.setImage(server.queue[0].thumbnail)
-								.addFields(
-									{ name: 'Duration', value: server.queue[0].duration, inline: true },
-									{ name: 'Upload Date', value: server.queue[0].uploadDate, inline: true },
-								)
 								.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
 								.setTimestamp();
+							if (server.loopcount < 2) embed.setImage(server.queue[0].thumbnail);
+							if (server.loopcount < 2) {
+								embed.addFields(
+									{ name: 'Duration', value: server.queue[0].duration, inline: true },
+									{ name: 'Upload Date', value: server.queue[0].uploadDate, inline: true },
+								);
+							}
 							message.channel.send(embed1);
 							console.log(`Now playing in ${message.guild.name}!`);
 							if (!message.guild.voice.selfDeaf) message.guild.voice.connection.voice.setSelfDeaf(true).then(() => console.log('Birdy deafened'));
@@ -131,15 +135,23 @@ module.exports = {
 								console.log(`Music now finished in ${message.guild.name}`);
 								if (server.loopvalue != false) server.loopvalue = false;
 								if (server.loopqueue != false) server.loopqueue = false;
+								if (server.loopcount != 0) server.loopcount = 0;
 								break;
 							default:
+								if (server.loopvalue == false) server.loopcount = 0;
 								playSong();
 								break;
 							}
 						});
 						server.dispatcher.on('error', async () => {
-							message.channel.send('There was an error while playing your music. I will now attempt to replay your song.');
-							playSong();
+							server.errorcount++;
+							if (server.errorcount > 3) {
+								return message.channel.send('I could not play your music so I give up.');
+							}
+							else {
+								message.channel.send('There was an error while playing your music. I will now attempt to replay your song.');
+								playSong();
+							}
 						});
 					}
 				}
