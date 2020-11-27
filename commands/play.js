@@ -71,7 +71,6 @@ module.exports = {
 				server.dispatcher = message.guild.voice.connection.play(stream);
 				server.dispatcher.on('start', async () => {
 					if (server.errorcount != 0) server.errorcount = 0;
-					if (server.loopvalue == true) server.loopcount++;
 					const embed = new Discord.MessageEmbed()
 						.setAuthor(`${server.queue[0].author} on Youtube`)
 						.setTitle('**Now Playing**')
@@ -104,6 +103,7 @@ module.exports = {
 						break;
 					default:
 						if (server.loopvalue == false) server.loopcount = 0;
+						if (server.loopvalue == true) server.loopcount++;
 						playSong();
 						break;
 					}

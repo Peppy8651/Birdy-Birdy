@@ -17,7 +17,10 @@ function secondsToHms(d) {
 module.exports = {
 	name: 'add',
 	description: 'add command for Birdy Birdy',
-	async execute(message, servers) {
+	async execute(message, servers, playingMap) {
+		if (!message.member.voice.channel) return message.channel.send('You can\'t use this command outside of a voice channel!');
+		if (playingMap.has(`${message.guild.id}`, 'Now Playing') == false) return message.channel.send('You can\'t add anything to a non-existant queue!');
+		if (message.member.voice.channelID != message.guild.me.voice.channelID) return message.channel.send('You can\'t add anything to a non-existant queue!');
 		const command = '>add ';
 		const args = message.content.slice(command.length).trim().split(/ -/);
 		const query = args.join(' ');

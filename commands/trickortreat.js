@@ -5,6 +5,8 @@ module.exports = {
 	name: 'trickortreat',
 	description: 'trickortreat command for October',
 	async execute(message) {
+		const today = new Date();
+		if (today.getMonth() != 9) return message.channel.send('We\'re not in October so there is definitely nobody trick-or-treating!');
 		const answers = ['trick', 'treat'];
 		const filter = response => {
 			return answers.some(answer => answer.toLowerCase() === response.content.toLowerCase());

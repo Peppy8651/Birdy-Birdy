@@ -4,7 +4,14 @@ const Discord = require('discord.js');
 module.exports = {
 	name: 'loop',
 	description: 'loop command',
-	async execute(message, server, args, value) {
+	async execute(message, servers, playingMap) {
+		if (!message.member.voice.channel) return message.channel.send('You can\'t use this command outside a voice channel!');
+		if (playingMap.has(`${message.guild.id}`, 'Now Playing') == false) return message.channel.send('There isn\'t anything playing in this server.');
+		if (message.member.voice.channelID != message.guild.me.voice.channelID) return message.channel.send('Looks like there isn\'t anything playing in this channel.');
+		const command = '>loop ';
+		const args = message.content.slice(command.length).trim().split(/ +/);
+		const value = args[0];
+		const server = servers[message.guild.id];
 		// eslint-disable-next-line no-inner-declarations
 		async function loop(loopparam) {
 			if (loopparam == undefined) {

@@ -4,13 +4,19 @@ const Discord = require('discord.js');
 module.exports = {
 	name: 'skip',
 	description: 'skip command for Birdy Birdy',
-	async execute(message, servers, args) {
+	async execute(message, servers, playingMap) {
+		if (!message.member.voice.channel) return message.channel.send('You can\'t use this command outside of a voice channel!');
+		if (playingMap.has(`${message.guild.id}`, 'Now Playing') == false) return message.channel.send('Looks like there isn\'t anything playing in this server. Or at least nothing other than maybe playlists.');
+		if (message.member.voice.channel.id != message.guild.me.voice.channel.id) return message.channel.send('Looks like there isn\'t anything playing in this channel.');
+		const command = '>skip ';
+		const args = message.content.slice(command.length).trim().split(/ +/);
 		const server = servers[message.guild.id];
 		if (!args[0]) {
 			if (server.loopvalue == true) {
 				server.queue.shift();
 				message.guild.voice.connection.dispatcher.end();
 				server.loopcount = 0;
+				console.log(server.loopcount);
 				message.channel.send('⏩ Skipped! ⏩');
 			}
 			else {

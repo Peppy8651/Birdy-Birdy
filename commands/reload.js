@@ -1,10 +1,15 @@
 /* eslint-disable no-unused-vars */
 const Discord = require('discord.js');
+const PEPPY_ID = '490548233601417223';
 
 module.exports = {
 	name: 'reload',
 	description: 'Reloads a command in the commands folder',
-	async execute(message, client, args) {
+	async execute(message, client) {
+		if (message.author.id != PEPPY_ID) return message.channel.send('You do not have permission to use this.');
+		const c = '>reload ';
+		const args = message.content.slice(c.length).trim().split(/ +/);
+		if (!args[0]) return message.channel.send('You didn\'t pass any command to reload!');
 		const commandName = args[0].toLowerCase();
 		const command = client.commands.get(commandName)
 			|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));

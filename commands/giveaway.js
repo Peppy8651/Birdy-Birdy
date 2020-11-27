@@ -7,6 +7,7 @@ const Discord = require('discord.js');
 module.exports = {
 	name: 'giveaway',
 	description: 'giveaway command for Birdy Birdy',
+	beta: true,
 	async execute(message, server) {
 		let embed = new Discord.MessageEmbed()
 			.setTitle('New Giveaway')

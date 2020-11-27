@@ -3,7 +3,7 @@
 const Discord = require('discord.js');
 const ytdl = require('ytdl-core');
 module.exports = {
-	name: 'rickroll',
+	name: 'rr',
 	description: 'rickroll command',
 	async execute(message, server, playingMap) {
 		if (!message.member.voice.channel) return message.channel.send('You need to be in a voice channel for this!');

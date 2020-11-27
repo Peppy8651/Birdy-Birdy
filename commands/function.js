@@ -4,7 +4,11 @@ const Discord = require('discord.js');
 module.exports = {
 	name: 'function',
 	description: 'function command',
+	authorcheck: true,
 	async execute(message, server) {
+		const command = '>function ';
+		const args = message.content.slice(command.length).trim().split(/ +/);
+		if (!args[0]) return message.channel.send('You can\'t turn nothing on or off unfortunately. This is true unless Peppy decides to make a function named "nothing." But for now, put those arguments!');
 		// eslint-disable-next-line no-inner-declarations
 		async function yestoggle() {
 			if (server.yes === true) {

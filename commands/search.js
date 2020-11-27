@@ -18,6 +18,8 @@ module.exports = {
 	name: 'search',
 	description: 'search command for searching music',
 	async execute(message, servers, playingMap) {
+		if (!message.member.voice.channel) return message.channel.send('You cannot use this command outside of a voice channel.');
+		if (playingMap.has(`${message.guild.id}`, 'Now Playing') == true && message.member.voice.channelID != message.guild.me.voice.channelID) return message.channel.send('There is already someone playing music in this server!');
 		const command = '>search ';
 		const args = message.content.slice(command.length).trim().split(/ -/);
 		const query = args.join(' ');

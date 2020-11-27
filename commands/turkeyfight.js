@@ -1,9 +1,24 @@
 const Discord = require('discord.js');
 
 module.exports = {
-	name: 'turkey',
+	name: 'turkeyfight',
 	description: 'turkeyfight command for Birdy',
-	async execute(message, server, member) {
+	async execute(message, server, client) {
+		if (server.turkeyfight.playing == true) return message.channel.send('There is already two people turkeyfighting in this server!');
+		const member = message.mentions.members.first();
+		if (!member) return message.channel.send('You need to ping a member to start turkeyfighting!');
+		if (member.user.id == message.author.id) return message.channel.send('Ok you punch yourself and die game over.');
+		if (member.user.id == client.user.id) return message.channel.send('I will destroy you immediately. Don\'t challenge a bot.');
+		if (member.user.bot) {
+			const embed = new Discord.MessageEmbed();
+			embed.setTitle('Seriously, why are you fighting bots?');
+			embed.setColor('PURPLE');
+			embed.setDescription(`Leaked footage of ${message.author} turkeyfighting a bot:`);
+			embed.setImage('https://media1.tenor.com/images/7bceb53c8046319b0016443cb1947a94/tenor.gif?itemid=18667615');
+			embed.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
+			embed.setTimestamp();
+			return message.channel.send(embed);
+		}
 		const newPlayers = [message.author, member.user];
 		const p1 = newPlayers[Math.floor(Math.random() * newPlayers.length)];
 		const player1 = {

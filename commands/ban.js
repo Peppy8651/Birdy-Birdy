@@ -5,6 +5,8 @@ module.exports = {
 	name: 'ban',
 	description: 'banhammer goes brrrr',
 	execute(message) {
+		if (!message.guild.me.hasPermission('ADMINISTRATOR') && !message.guild.me.hasPermission('BAN_MEMBERS')) return message.channel.send('Sorry, can\'t ban anybody since I don\'t have the permissions to.');
+		if (!message.member.hasPermission('ADMINISTRATOR') && !message.member.hasPermission('BAN_MEMBERS')) return message.channel.send('You don\'t have the permissions to use this command!');
 		const cmd = '>ban ';
 		const findargs = message.content.slice(cmd.length).trim().split(/ +/);
 		const member = message.mentions.members.first() || message.guild.members.cache.get(`${findargs[0]}`) || message.guild.members.cache.find(m => m.user.tag == `${findargs[0]}`);
