@@ -41,6 +41,7 @@ ${list[0].example}`)
 					.setFooter(`👍${list[0].thumbs_up} 👎${list[0].thumbs_down}
 Command used by ${message.author.tag} • Powered by Urban Dictionary`, message.author.displayAvatarURL())
 					.setTimestamp();
+				if (embed.description.length > 2048) return message.channel.send('This definition or example is way too big!');
 				message.channel.send(embed);
 			}
 		}

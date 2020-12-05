@@ -11,7 +11,7 @@ module.exports = {
 		const command = '>loop ';
 		const args = message.content.slice(command.length).trim().split(/ +/);
 		const value = args[0];
-		const server = servers[message.guild.id];
+		const server = servers.find(s => s.id == message.guild.id);
 		// eslint-disable-next-line no-inner-declarations
 		async function loop(loopparam) {
 			if (loopparam == undefined) {

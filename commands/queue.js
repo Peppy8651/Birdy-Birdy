@@ -19,7 +19,7 @@ module.exports = {
 			}
 			// eslint-disable-next-line no-case-declarations
 			const embed = new Discord.MessageEmbed()
-				.setTitle('Current Queue')
+				.setTitle(`Current Queue [${server.queue.length}]`)
 				.setColor(0xFF0000)
 				.setDescription(URLtitles)
 				.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())

@@ -1,5 +1,5 @@
+/* eslint-disable quotes */
 const Discord = require('discord.js');
-
 module.exports = {
 	name: 'helpdefine',
 	description: 'define part of help command',
@@ -11,8 +11,8 @@ module.exports = {
 		try {
 			cmd = require(`./cmdinfo/${query}`);
 		}
-		catch (error) {
-			return message.channel.send('This query is invalid. Remember that prefixes should not be included in queries and that some commands haven\'t gotten entries.');
+		catch {
+			return message.channel.send('I could not find any commands in my library using your query. Remember, some commands haven\'t gotten their information yet.');
 		}
 		const embed = new Discord.MessageEmbed();
 		embed.setTitle(cmd.command);

@@ -5,7 +5,7 @@ module.exports = {
 		if (!message.member.voice.channel) return message.channel.send('You can\'t use this command outside a voice channel!');
 		if (playingMap.has(`${message.guild.id}`, 'Now Playing') == false) return message.channel.send('There isn\'t anything playing in this server.');
 		if (message.member.voice.channelID != message.guild.me.voice.channelID) return message.channel.send('Looks like there isn\'t anything playing in this channel.');
-		const server = servers[message.guild.id];
+		const server = servers.find(s => s.id == message.guild.id);
 		message.guild.voice.connection.dispatcher.destroy();
 		message.channel.send('⏹️ Music content stopped successfully ⏹️');
 		if (server.loopvalue != false) server.loopcount = 0;

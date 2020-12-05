@@ -32,22 +32,42 @@ module.exports = {
 			return void message.channel.send('Sorry, couldn\'t find anything.');
 		});
 		if (!res) return;
-		for (var i = 0; i < 5; i++) {
+		let index = 5;
+		for (var i = 0; i < index; i++) {
 			const vid = res.items.filter(e => e.type === 'video')[i];
 			if (!vid) return message.channel.send('Couldn\'t find a video, at least correctly.');
 			const info = await ytdl.getBasicInfo(`${vid.link}`);
-			const vidtitle = info.videoDetails.title;
+			if (info.videoDetails.isLiveContent == true) {
+				index++;
+				return i++;
+			}
+			let vidtitle = info.videoDetails.title;
+			if (vidtitle.startsWith('**') && vidtitle.endsWith('**')) {
+				const songtitle = vidtitle.slice(2).split('*');
+				const songytitle = songtitle[0];
+				vidtitle = songytitle;
+			}
 			const vidurl = info.videoDetails.video_url;
 			const vidduration = secondsToHms(info.videoDetails.lengthSeconds);
 			const rnumber = i + 1;
-			var song = {
+			let videothumb;
+			if (!info.videoDetails.thumbnail.thumbnails[1]) videothumb = info.videoDetails.thumbnail.thumbnails[0].url;
+			if (!info.videoDetails.thumbnail.thumbnails[2]) videothumb = info.videoDetails.thumbnail.thumbnails[1].url;
+			if (!info.videoDetails.thumbnail.thumbnails[3]) videothumb = info.videoDetails.thumbnail.thumbnails[2].url;
+			if(!info.videoDetails.thumbnail.thumbnails[4]) videothumb = info.videoDetails.thumbnail.thumbnails[3].url;
+			if (info.videoDetails.thumbnail.thumbnails[4]) videothumb = info.videoDetails.thumbnail.thumbnails[4].url;
+			const author = info.videoDetails.author.name == undefined ? info.videoDetails.ownerChannelName : info.videoDetails.author.name;
+			let song = {
+				msgauthor: message.author,
 				title: vidtitle,
-				number: rnumber,
-				link: vidurl,
-				length: vidduration,
+				url: vidurl,
+				author: author,
+				thumbnail: videothumb,
+				duration: vidduration,
+				uploadDate: info.videoDetails.uploadDate,
 			};
-			URLSinfo.push(`${rnumber}. **[${song.title}](${song.link})**: ${song.length}`);
-			URLs.push(song.link);
+			URLSinfo.push(`${rnumber}. **[${song.title}](${song.url})**: ${song.duration}`);
+			URLs.push(song);
 		}
 		loadingmsg.delete();
 		const embed = new Discord.MessageEmbed()
@@ -73,27 +93,12 @@ module.exports = {
 				if (collected.first().content.includes('3')) num = 3;
 				if (collected.first().content.includes('4')) num = 4;
 				if (collected.first().content.includes('5')) num = 5;
-				const server = servers[message.guild.id];
+				const server = servers.find(s => s.id == message.guild.id);
 				const video = URLs[num - 1];
-				const info = await ytdl.getBasicInfo(video);
-				let videothumb;
-				if (!info.videoDetails.thumbnail.thumbnails[1]) videothumb = info.videoDetails.thumbnail.thumbnails[0].url;
-				if (!info.videoDetails.thumbnail.thumbnails[2]) videothumb = info.videoDetails.thumbnail.thumbnails[1].url;
-				if (!info.videoDetails.thumbnail.thumbnails[3]) videothumb = info.videoDetails.thumbnail.thumbnails[2].url;
-				if(!info.videoDetails.thumbnail.thumbnails[4]) videothumb = info.videoDetails.thumbnail.thumbnails[3].url;
-				if (info.videoDetails.thumbnail.thumbnails[4]) videothumb = info.videoDetails.thumbnail.thumbnails[4].url;
-				let vid = {
-					title: info.videoDetails.title,
-					url: info.videoDetails.video_url,
-					author: info.videoDetails.author.name,
-					thumbnail: videothumb,
-					duration: secondsToHms(info.videoDetails.lengthSeconds),
-					uploadDate: info.videoDetails.uploadDate,
-				};
-				server.queue.push(vid);
+				server.queue.push(video);
 				try {
 					if (playingMap.has(`${message.guild.id}`, 'Now Playing')) {
-						message.channel.send(`Added **${vid.title}** to queue.`);
+						message.channel.send(`Added **${video.title}** to queue.`);
 						console.log('Added new video to queue');
 					}
 					else {
@@ -108,17 +113,16 @@ module.exports = {
 						server.dispatcher = message.guild.voice.connection.play(stream);
 						server.dispatcher.on('start', async () => {
 							if (server.errorcount != 0) server.errorcount = 0;
-							if (server.loopvalue == true) server.loopcount++;
 							const embed1 = new Discord.MessageEmbed()
-								.setAuthor(`${info.videoDetails.author.name} on Youtube`)
+								.setAuthor(`${server.queue[0].author} on Youtube`)
 								.setTitle('**Now Playing**')
 								.setDescription(`**[${server.queue[0].title}](${server.queue[0].url})**`)
 								.setColor(0xFF0000)
-								.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
+								.setFooter(`Song added by ${server.queue[0].msgauthor.tag}`, server.queue[0].msgauthor.displayAvatarURL())
 								.setTimestamp();
-							if (server.loopcount < 2) embed.setImage(server.queue[0].thumbnail);
-							if (server.loopcount < 2) {
-								embed.addFields(
+							if (server.loopcount < 1) embed1.setImage(server.queue[0].thumbnail);
+							if (server.loopcount < 1) {
+								embed1.addFields(
 									{ name: 'Duration', value: server.queue[0].duration, inline: true },
 									{ name: 'Upload Date', value: server.queue[0].uploadDate, inline: true },
 								);
@@ -141,6 +145,7 @@ module.exports = {
 								break;
 							default:
 								if (server.loopvalue == false) server.loopcount = 0;
+								if (server.loopvalue == true) server.loopcount++;
 								playSong();
 								break;
 							}
@@ -148,7 +153,9 @@ module.exports = {
 						server.dispatcher.on('error', async () => {
 							server.errorcount++;
 							if (server.errorcount > 3) {
-								return message.channel.send('I could not play your music so I give up.');
+								message.channel.send('I could not play your music so I give up and will play the next song.');
+								server.queue.shift();
+								playSong();
 							}
 							else {
 								message.channel.send('There was an error while playing your music. I will now attempt to replay your song.');

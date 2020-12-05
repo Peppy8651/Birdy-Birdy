@@ -4,7 +4,7 @@ module.exports = {
 	name: 'turkeystats',
 	description: 'turkeystats command',
 	async execute(message, servers) {
-		const server = servers[message.guild.id];
+		const server = servers.find(s => s.id == message.guild.id);
 		if (server.turkeyfight.playing != true) return message.channel.send('There isn\'t anyone playing Turkey Fight in this server...');
 		const embed = new Discord.MessageEmbed()
 			.setTitle('Current Turkey Fight Game')

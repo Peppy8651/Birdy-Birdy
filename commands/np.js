@@ -16,7 +16,7 @@ module.exports = {
 				{ name: 'Duration', value: server.queue[0].duration, inline: true },
 				{ name: 'Upload Date', value: server.queue[0].uploadDate, inline: true },
 			)
-			.setDescription(`**[${server.queue[0].title}](${server.queue[0].url})**: ${server.queue[0].duration}`)
+			.setDescription(`**[${server.queue[0].title}](${server.queue[0].url})**: ${server.queue[0].duration} || ${server.queue[0].msgauthor}`)
 			.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
 			.setTimestamp();
 		message.channel.send(embed);

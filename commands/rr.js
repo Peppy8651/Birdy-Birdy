@@ -47,7 +47,7 @@ module.exports = {
 						{ name: 'Duration', value: server.queue[0].duration, inline: true },
 						{ name: 'Upload Date', value: server.queue[0].uploadDate, inline: true },
 					)
-					.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
+					.setFooter(`Song added by ${server.queue[0].msgauthor.tag}`, server.queue[0].msgauthor.displayAvatarURL())
 					.setTimestamp();
 				message.channel.send(embed);
 				console.log(`Now playing in ${message.guild.name}!`);
@@ -68,8 +68,16 @@ module.exports = {
 				}
 			});
 			server.dispatcher.on('error', async () => {
-				message.channel.send('There was an error while playing your music. I will now attempt to replay your song.');
-				playSong();
+				server.errorcount++;
+				if (server.errorcount > 3) {
+					message.channel.send('I could not play your music so I give up and will play the next song.');
+					server.queue.shift();
+					playSong();
+				}
+				else {
+					message.channel.send('There was an error while playing your music. I will now attempt to replay your song.');
+					playSong();
+				}
 			});
 		}
 		// Always remember to handle errors appropriately!

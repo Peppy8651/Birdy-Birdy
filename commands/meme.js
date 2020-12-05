@@ -11,30 +11,26 @@ module.exports = {
     cooldown: 2.5,
     description: 'meme command that fetches memes from reddit',
 	async execute(message) {
-        memeChecker(message);
-        dankMemeChecker(message);
-        const subreddits = ['memes', 'dankmemes'];
-        const subreddit = subreddits[Math.floor(Math.random() * subreddits.length)];
-        const results = require(`../${subreddit}.json`);
-            const postnum = Math.floor(Math.random() * 100);
-            var x = Math.floor(Math.random() * 30);
-                const embed = new Discord.MessageEmbed()
-                    .setAuthor(`${results.data.children[postnum].data.subreddit_name_prefixed} • Posted by u/${results.data.children[postnum].data.author}`)
-                    .setColor(0xFF4500)
-                    .setTitle(`**${results.data.children[postnum].data.title}**`)
-                    .setURL(`https://www.reddit.com${results.data.children[postnum].data.permalink}`)
-                    .setImage(results.data.children[postnum].data.url_overridden_by_dest)
-                    .setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
-                message.channel.send(embed);
-            if (x === 15) {
-                message.channel.send(`**TIP**
-Wanna know why there's a cooldown? Well, this cooldown ensures that every meme command you use works unless it's on cooldown. Without the cooldown, there would probably be some times where the command wouldn't work and I would get an error! Either way, the cooldown shouldn't take too long since it's only 5 seconds and loading the meme and reading it would take more.`);
-            }
+        try {
+            memeChecker(message);
+            dankMemeChecker(message);
+        }
+        catch {
+            console.log('There was a problem with the memeChecker and dankMemeChecker functions.');
+        }
+        const command = '>meme ';
+        const args = message.content.slice(command.length).trim().split(/ -/);
+        const subreddits = ['memes', 'dankmemes', 'memes', 'dankmemes', 'memes', 'dankmemes'];
+        let subreddit = subreddits[Math.floor(Math.random() * subreddits.length)];
+        if (args[0].toLowerCase().startsWith('r/')) args[0] = args[0].slice(2);
+        if (args[0] == 'dankmemes' || args[0] == 'dank') subreddit = 'dankmemes';
+        if (args[0] == 'memes') subreddit = 'memes';
+        fetchMeme(message, subreddit);
 	},
 };
 
 async function memeChecker(message) {
-    fs.readFile('../memes.json', async function(err, data) {
+    fs.readFile('../memes.json', 'utf8', async function(err, data) {
         if (err) {
             const res = await fetch('https://api.reddit.com/r/memes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
             fs.writeFile('../memes.json', JSON.stringify(res), async function(ror) {
@@ -45,7 +41,8 @@ async function memeChecker(message) {
             });
         }
         if (data) {
-            if (!data.data) {
+            const d = JSON.parse(`${data}`);
+            if (!d.data) {
                 const res = await fetch('https://api.reddit.com/r/memes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
                 fs.writeFile('C:/Users/Owner/Documents/BirdyBirdy/memes.json', JSON.stringify(res), async function(p) {
                     if (p) {
@@ -54,7 +51,7 @@ async function memeChecker(message) {
                     }
                 });
                 const time = new Date();
-                const hour = time.getMonth() + 1;
+                const hour = time.getHours();
                 const memeCheck = require('C:/Users/Owner/Documents/BirdyBirdy/memechecker.json');
                 if (memeCheck.memes == hour) return;
                 const memeCheckyHour = {
@@ -67,9 +64,9 @@ async function memeChecker(message) {
             }
             else {
                 const time = new Date();
-                const hour = time.getMonth() + 1;
+                const hour = time.getHours();
                 const hoursToUpdate = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24];
-                if (hoursToUpdate.some(hour) == true) {
+                if (hoursToUpdate.some(h => h == hour) == true) {
                     const memeCheck = require('C:/Users/Owner/Documents/BirdyBirdy/memechecker.json');
                     if (memeCheck.memes == hour) return;
                     const res = await fetch('https://api.reddit.com/r/memes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
@@ -94,7 +91,7 @@ async function memeChecker(message) {
 }
 
 async function dankMemeChecker(message) {
-    fs.readFile('../memes.json', async function(err, data) {
+    fs.readFile('../memes.json', 'utf8', async function(err, data) {
         if (err) {
             const res = await fetch('https://api.reddit.com/r/memes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
             fs.writeFile('../memes.json', JSON.stringify(res), async function(ror) {
@@ -105,7 +102,8 @@ async function dankMemeChecker(message) {
             });
         }
         if (data) {
-            if (!data.data) {
+            const d = JSON.parse(`${data}`);
+            if (!d.data) {
                 const res = await fetch('https://api.reddit.com/r/dankmemes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
                 fs.writeFile('C:/Users/Owner/Documents/BirdyBirdy/dankmemes.json', JSON.stringify(res), async function(p) {
                     if (p) {
@@ -114,7 +112,7 @@ async function dankMemeChecker(message) {
                     }
                 });
                 const time = new Date();
-                const hour = time.getMonth() + 1;
+                const hour = time.getHours();
                 const memeCheck = require('C:/Users/Owner/Documents/BirdyBirdy/memechecker.json');
                 if (memeCheck.memes == hour) return;
                 const memeCheckyHour = {
@@ -127,9 +125,9 @@ async function dankMemeChecker(message) {
             }
             else {
                 const time = new Date();
-                const hour = time.getMonth() + 1;
+                const hour = time.getHours();
                 const hoursToUpdate = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24];
-                if (hoursToUpdate.some(hour) == true) {
+                if (hoursToUpdate.some(h => h == hour) == true) {
                     const memeCheck = require('C:/Users/Owner/Documents/BirdyBirdy/memechecker.json');
                     if (memeCheck.memes == hour) return;
                     const res = await fetch('https://api.reddit.com/r/dankmemes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
@@ -151,4 +149,43 @@ async function dankMemeChecker(message) {
             }
         }
     });
+}
+
+async function fetchMeme(message, subreddit) {
+    const results = require(`../${subreddit}.json`);
+            const postnum = Math.floor(Math.random() * 99);
+            let image = `${results.data.children[postnum].data.url_overridden_by_dest}`;
+            if (image.endsWith('.gifv')) {
+                return fetchMeme(message, subreddit);
+            }
+            const over18 = results.data.children[postnum].data.over_18;
+            if (over18 == true) {
+                return fetchMeme(message, subreddit);
+            }
+            if (image.startsWith('https://preview.redd.it/')) {
+                const img = image.replace('preview.redd.it', 'i.redd.it').split('?');
+                image = img[0];
+            }
+            if (image.endsWith('.mp4')) {
+                return fetchMeme(message, subreddit);
+            }
+            if (image.startsWith('https://v.redd.it')) return fetchMeme(message, subreddit);
+            if (image.startsWith('https://gfycat.com/')) return fetchMeme(message, subreddit);
+            var x = Math.floor(Math.random() * 30);
+                const embed = new Discord.MessageEmbed()
+                    .setAuthor(`${results.data.children[postnum].data.subreddit_name_prefixed} • Posted by u/${results.data.children[postnum].data.author}`)
+                    .setColor(0xFF4500)
+                    .setTitle(`**${results.data.children[postnum].data.title}**`)
+                    .setURL(`https://www.reddit.com${results.data.children[postnum].data.permalink}`)
+                    .setImage(image)
+                    .setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
+                    embed.setTimestamp();
+                message.channel.send(embed).catch(() => {
+                    fetchMeme(message, subreddit);
+                    return;
+                });
+            if (x === 15) {
+                message.channel.send(`**TIP**
+Hey, these memes come from Reddit; therefore, if you want to get more memes, you can either click the hyperlink as the title or you can go to Reddit and find memes!`);
+            }
 }

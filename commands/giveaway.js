@@ -11,7 +11,7 @@ module.exports = {
 		let embed = new Discord.MessageEmbed()
 			.setTitle('New Giveaway')
 			.setColor('BLUE')
-			.setDescription('After this message, ping a channel for me to use so then we can start the giveaway creation process.')
+			.setDescription('After this message, add a channel for me to use so then we can start the giveaway creation process. If you want to cancel, you type `cancel` anytime during the giveaway creation process to cancel it.')
 			.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
 			.setTimestamp();
 			// Taken from https://media.hearthpwn.com/attachments/96/923/tadapopper.png
@@ -24,37 +24,36 @@ module.exports = {
 		message.channel.send(embed).then(() => {
 			message.channel.awaitMessages(filter, { max: 1, time: 20000, errors: ['time'] })
 				.then(collected => {
-					const channel = collected.first().mentions.channels.first();
-					if (!channel) return message.channel.send('This isn\'t a channel... I will have to cancel the giveaway creation process. Next time remember that you have to ping a channel.');
+					if (collected.first().content.toLowerCase() == 'cancel') return message.channel.send('Okay, cancelling giveaway creation process.');
+					const channel = collected.first().mentions.channels.first() || message.guild.channels.cache.find(c => c.name == `${collected.first().content.toLowerCase()}`) || message.guild.channels.cache.get(collected.first().content.toLowerCase());
+					if (!channel) return message.channel.send('This isn\'t a channel... I will have to cancel the giveaway creation process. Next time remember that you have to ping a channel, put the channel name in your content, or add the channel ID in your content.');
 					embed.setDescription('Now that you have added a channel, add what the prize is below this message.');
 					embed.addField('Channel', channel, true);
 					message.channel.send(embed).then(() => {
 						message.channel.awaitMessages(filter, { max: 1, time: 20000, errors: ['time'] })
 							.then(collecte => {
+								if (collecte.first().content.toLowerCase() == 'cancel') return message.channel.send('Okay, cancelling giveaway creation process.');
 								const prize = collecte.first().content;
 								embed.setDescription('You have added a prize, so now let\'s start getting complicated. First of all, choose the type of time you want to use. Options are minutes and seconds.');
 								embed.addField('Prize', prize, true);
-								const answers = ['seconds', 'minutes'];
+								const answers = ['seconds', 'minutes', 'cancel'];
 								const newfilter = response => {
 									return answers.some(n => n.toLowerCase() == response.content.toLowerCase()) && users.some(a => a.toLowerCase() == response.author.id);
 								};
 								message.channel.send(embed).then(() => {
 									message.channel.awaitMessages(newfilter, { max: 1, time: 20000, errors: ['time'] })
 										.then(collect => {
+											if (collect.first().content.toLowerCase() == 'cancel') return message.channel.send('Okay, cancelling giveaway creation process.');
 											const timetype = collect.first().content.toLowerCase();
-											let maxtime;
-											if (timetype == 'seconds') maxtime = '60';
-											if (timetype == 'minutes') maxtime = '30';
-											embed.setDescription(`Good. Now that you have chosen your time type as ${timetype}, we can choose how much time you want. The maximum time for ${timetype} is ${maxtime} ${timetype}.`);
+											embed.setDescription(`Good. Now that you have chosen your time type as ${timetype}, we can choose how much time you want. The maximum time for minutes and seconds is 60.`);
 											message.channel.send(embed).then(() => {
-												let ans;
-												if (timetype == 'minutes') ans = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'];
-												if (timetype == 'seconds') ans = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60'];
+												let ans = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', 'cancel'];
 												const newerfilter = response => {
 													return ans.some(n => n.toLowerCase() == response.content.toLowerCase()) && users.some(a => a.toLowerCase() == response.author.id);
 												};
 												message.channel.awaitMessages(newerfilter, { max: 1, time: 20000, errors: ['time'] })
 													.then(collec => {
+														if (collec.first().content.toLowerCase() == 'cancel') return message.channel.send('Okay, cancelling giveaway creation process.');
 														const timenum = collec.first().content.toLowerCase();
 														embed.setDescription('Now that you have set your time, we can begin the giveaway. For now, let me remind you that if the bot goes down, your giveaway will stop.');
 														const tt = timetype == 'minutes' ? 'minute(s)' : 'second(s)';

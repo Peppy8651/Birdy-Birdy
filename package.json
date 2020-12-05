@@ -1,13 +1,13 @@
 {
-  "name": "BirdyBirdy",
-  "version": "1.0.0",
+  "name": "birdybirdy",
+  "version": "1.6.40",
   "description": "Oh yes oh yes",
   "main": "birdy.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Peppy8651",
   "license": "ISC",
   "dependencies": {
     "@discordjs/opus": "^0.3.3",
@@ -29,9 +29,18 @@
     "random-puppy": "^1.1.0",
     "simple-youtube-api": "^5.2.1",
     "steamapi": "^2.1.2",
-    "ytdl-core": "^4.1.0",
+    "ytdl-core": "^4.1.2",
     "ytdl-core-discord": "^1.2.3",
     "ytpl": "^1.0.1",
     "ytsr": "^2.0.0-alpha.3"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Peppy8651/Birdy-Birdy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Peppy8651/Birdy-Birdy/issues"
+  },
+  "homepage": "https://github.com/Peppy8651/Birdy-Birdy#readme"
 }

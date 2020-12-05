@@ -7,48 +7,22 @@
 /* eslint-disable no-var */
 const Discord = require('discord.js');
 const fs = require('fs');
+const { setInterval } = require('timers');
 const client = new Discord.Client();
 const { version } = require('./config.json');
 const { globalPrefix } = require('./config.json');
 const { token } = require('./config.json');
 client.setMaxListeners(100);
 client.commands = new Discord.Collection();
-let servers = {};
+const timers = new Discord.Collection();
 // eslint-disable-next-line no-unused-vars
 async function BetaCheck(msg) {
-	const Cobras = await client.guilds.fetch('774316995897982980');
+	const Cob = await client.guilds.fetch('774316995897982980');
 	const LS = await client.guilds.fetch('699461818422394910');
 	const DFMD = await client.guilds.fetch('615884282040287242');
-	if (msg.guild.id != Cobras.id && msg.guild.id != LS.id && msg.guild.id != DFMD.id) return message.channel.send('This command is currently being tested and cannot be used outside of featured servers.');
+	if (msg.guild.id != Cob.id && msg.guild.id != LS.id && msg.guild.id != DFMD.id) return msg.channel.send('This command is currently being tested and cannot be used outside of featured servers.');
 }
 
-client.on('guildCreate', async guild => {
-	console.log(`Was added to ${guild.name}!`);
-});
-
-client.on('message', message => {
-	if (!message.guild) return;
-	if (!servers[message.guild.id]) {
-		servers[message.guild.id] = {
-			yes: false,
-			communism: false,
-			queue: [],
-			loopvalue: false,
-			loopcount: 0,
-			errorcount: 0,
-			loopqueue: false,
-			snipe: [],
-			editsnipe: [],
-			turkeyfight: {
-				players: [],
-				playersconstant: [],
-				playing: false,
-				turn: null,
-			},
-			giveaways: [],
-		};
-	}
-});
 const playingMap = new Map();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -59,9 +33,8 @@ for (const file of commandFiles) {
 	// with the key as the command name and the value as the exported module
 	client.commands.set(command.name, command);
 }
-
 const cooldowns = new Discord.Collection();
-
+client.login(`${token}`);
 client.on('ready', async () => {
 	console.log('Ready!');
 	console.log(`Logged in as ${client.user.tag}`);
@@ -73,8 +46,19 @@ client.on('ready', async () => {
 		name: BirdyActivity,
 	});
 });
+const { ClientServer } = require('./server.js');
+const MYGUILD = new ClientServer('615884282040287242', client);
+let servers = [MYGUILD];
+client.on('guildCreate', async guild => {
+	console.log(`Was added to ${guild.name}!`);
+});
 
-client.login(`${token}`);
+client.on('message', async message => {
+	if (!message.guild) return;
+	if (servers.some(s => s.id == message.guild.id) == true) return;
+	const server = new ClientServer(message.guild.id, client);
+	servers.push(server);
+});
 
 process.on('unhandledRejection', async error => {
 	console.error('Unhandled promise rejection:', error);
@@ -94,24 +78,52 @@ client.on('message', async message => {
 			client.commands.get('help').execute(message, client, globalPrefix);
 		}
 	}
+	else if (message.content.toLowerCase() == globalPrefix + 'reset') {
+		if (!message.member.hasPermission('ADMINISTRATOR')) return message.channel.send('Only admins can use this command.');
+		const server = servers.find(s => s.id == message.guild.id);
+		if (playingMap.has('Now Playing', message.guild.id) || server.turkeyfight.playing == true || server.giveaways.length > 0) return message.channel.send('Sorry, cannot reset the server settings and functions while someone else is using it.');
+		const ClientServerDefault = {
+            id: this.id,
+            yes: false,
+            communism: false,
+            queue: [],
+            loopvalue: false,
+            loopcount: 0,
+            errorcount: 0,
+            loopqueue: false,
+            snipe: [],
+            editsnipe: [],
+            turkeyfight: {
+                players: [],
+                playersconstant: [],
+                playing: false,
+                turn: null,
+            },
+            giveaways: [],
+		};
+		if (server == ClientServerDefault) return message.channel.send('There is nothing to change, sit\'s already set to the default settings.');
+		message.channel.send('Reset the server data!');
+	}
 	else {
 		let cmd = message.content.slice(globalPrefix.length).trim().split(/ +/)[0].toLowerCase();
-		const command = await client.commands.get(`${cmd}`);
-		const server = servers[message.guild.id];
 		if (cmd == 'eightball') cmd = '8ball';
+		if (cmd == 'unpause') cmd = 'resume';
 		if (!cmd) return;
+		const command = await client.commands.get(`${cmd}`);
+		const server = servers.find(s => s.id == message.guild.id);
 		if (!command) return;
 		if (!command.execute) return;
-		if (command.beta == false) BetaCheck(message);
+		if (command.beta == true) BetaCheck(message);
 		if (command.authorcheck == true && message.author.id == client.user.id) return;
 		if (cmd == 'changelog') return command.execute(message, client, version);
+		if (cmd == 'timer') return command.execute(message, timers);
 		if (cmd == 'function' || cmd == 'giveaway' || cmd == 'snipe') return command.execute(message, server);
 		if (cmd == 'loop' || cmd == 'add' || cmd == 'search' || cmd == 'skip' || cmd == 'stop' || cmd == 'disconnect') return command.execute(message, servers, playingMap);
-		if (cmd == 'timer') return;
+		if (cmd == 'reset' || cmd == 'preview') return command.execute(message, servers, client);
 		if (cmd == 'rr' || cmd == 'cut' || cmd == 'queue' || cmd == 'np' || cmd == 'clear') return command.execute(message, server, playingMap);
-		if (cmd == 'pause') return command.execute(message, playingMap);
+		if (cmd == 'pause' || cmd == 'resume') return command.execute(message, playingMap);
 		if (cmd == 'turkeystats') return command.execute(message, servers);
-		if (cmd == 'meme' || cmd == 'cursed' || cmd == 'reddit' || cmd == 'ping') {
+		if (cmd == 'meme' || cmd == 'cursed' || cmd == 'reddit' || cmd == 'ping' || cmd == 'dog' || cmd == 'cat') {
 			if (!cooldowns.has(command.name)) {
 				cooldowns.set(command.name, new Discord.Collection());
 			}
@@ -133,6 +145,8 @@ client.on('message', async message => {
 		if (cmd == 'reload' || cmd == 'greg' || cmd == 'about' || cmd == 'sprite' || cmd == 'invite' || cmd == 'suggest' || cmd == 'fortune') return command.execute(message, client);
 		if (cmd == 'play') {
 			if (!message.member.voice.channel) return message.channel.send('You need to be in a voice channel to perform this command.');
+			if (!message.guild.me.hasPermission('CONNECT')) return message.channel.send('I cannot connect to the voice channel!');
+			if (!message.guild.me.hasPermission('SPEAK')) return message.channel.send('I cannot speak in the voice channel!');
 			if (playingMap.has(`${message.guild.id}`, 'Now Playing') == true && message.member.voice.channelID != message.guild.me.voice.channelID) return message.channel.send('There is already someone playing music in this server!');
 			if (message.content.includes('https://www.youtube.com/playlist?')) {
 				return message.channel.send('Sorry, but playlist support has been removed.');
@@ -154,28 +168,12 @@ const PEPPY_ID = '490548233601417223';
 client.on('message', async message => {
 	if(!message.guild) return;
 	if(message.author.id === client.user.id) return;
-	if(message.content.toLowerCase().startsWith('hello there')) {
+	if(message.content.toLowerCase() == 'hello there') {
 		// eslint-disable-next-line no-shadow
-		const sentMessage = message.channel.send('General Kenobi');
-		await sentMessage.react('👏');
-	}
-});
-
-client.on('message', async message => {
-	if (!message.guild) return;
-	if(message.author.id === client.user.id) return;
-	client.timercommands = new Discord.Collection();
-	const timercommandFiles = fs.readdirSync('./commands/timer').filter(file => file.endsWith('.js'));
-
-	for (const file of timercommandFiles) {
-		const timercommand = require(`./commands/timer/${file}`);
-
-		// set a new item in the Collection
-		// with the key as the command name and the value as the exported module
-		client.timercommands.set(timercommand.name, timercommand);
-	}
-	if(message.content.toLowerCase().startsWith(globalPrefix + 'timer')) {
-		client.timercommands.get('timer').execute(message);
+		const sentMessage = await message.channel.send('General Kenobi');
+		sentMessage.react('👏');
+		sentMessage.react('🤯');
+		sentMessage.react('👌');
 	}
 });
 
@@ -183,15 +181,19 @@ client.on('message', message => {
 	if (!message.guild) return;
 	if (!message.guild.me.voice.channel && playingMap.has(`${message.guild.id}`, 'Now Playing')) {
 		playingMap.delete(`${message.guild.id}`, 'Now Playing');
-		const server = servers[message.guild.id];
+		const server = servers.find(s => s.id == message.guild.id);
 		server.queue.splice(0, server.queue.length);
+		server.loopvalue = false;
+		server.loopqueue = false;
+		server.loopcount = 0;
+		server.errorcount = 0;
 	}
 });
 
 client.on('message', message => {
 	if(!message.guild) return;
 	if (message.author.id === client.user.id) return;
-	const server = servers[message.guild.id];
+	const server = servers.find(s => s.id == message.guild.id);
 	if (server.communism === false) return;
 	if(message.content.toLowerCase().includes('my')) {
 		message.channel.send('You mean **OUR**?');
@@ -205,7 +207,7 @@ client.on('message', message => {
 client.on('message', message => {
 	if(!message.guild) return;
 	if(message.author.id === client.user.id) return;
-	const server = servers[message.guild.id];
+	const server = servers.find(s => s.id == message.guild.id);
 	if(server.yes === false) return;
 	if(message.content.toLowerCase().includes('yes')) {
 		message.channel.send('no');
@@ -217,7 +219,8 @@ client.on('message', message => {
 
 client.on('messageDelete', message => {
 	if (!message.guild) return;
-	const server = servers[message.guild.id];
+	const server = servers.find(s => s.id == message.guild.id);
+	if (!server) return;
 	const time = new Date();
 	const timefiltered = `${time.getMonth() + 1}/${time.getDate()}/${time.getFullYear()}`;
 	let img;
@@ -248,7 +251,7 @@ client.on('messageDelete', message => {
 
 client.on('messageReactionAdd', async (reaction, user) => {
 	if (!reaction.message.guild) return;
-	const server = servers[reaction.message.guild.id];
+	const server = servers.find(s => s.id == reaction.message.guild.id);
 	if (reaction.emoji.url != null && reaction.emoji.name != 'tada') return;
 	for (var i = 0; i < server.giveaways.length; i++) {
 		if (server.giveaways[i].msgID == reaction.message.id) {
@@ -270,7 +273,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
 
 client.on('messageReactionRemove', async (reaction, user) => {
 	if (!reaction.message.guild) return;
-	const server = servers[reaction.message.guild.id];
+	const server = servers.find(s => s.id == reaction.message.guild.id);
 	if (reaction.emoji.url != null && reaction.emoji.name != 'tada') return;
 	for (var i = 0; i < server.giveaways.length; i++) {
 		if (server.giveaways[i].msgID == reaction.message.id) {
@@ -292,7 +295,7 @@ client.on('messageReactionRemove', async (reaction, user) => {
 
 client.on('guildMemberRemove', async member => {
 	if (!member.guild) return;
-	const server = servers[member.guild.id];
+	const server = servers.find(s => s.id == member.guild.id);
 	for (var i = 0; i < server.giveaways.length; i++) {
 		if (server.giveaways[i].users.some(a => a.toLowerCase() == member.user.id.toLowerCase()) == true) {
 			const index = server.giveaways[i].users.indexOf(member.user.id);
@@ -300,3 +303,23 @@ client.on('guildMemberRemove', async member => {
 		}
 	}
 });
+
+client.on('guildDelete', async guild => {
+	const server = servers.find(s => s.id == guild.id);
+	if (!server) return;
+	const index = servers.indexOf(server);
+	servers.splice(index, 1);
+});
+
+// eslint-disable-next-line no-unused-vars
+let presence = setInterval(() => {
+	const Activity = client.user.presence.activities.find(a => a.type == 'LISTENING');
+	if (!Activity) {
+		const command = client.commands.get('status');
+		const BirdyActivity = command.fetchStatus();
+		client.user.setActivity(BirdyActivity, {
+			type: 'LISTENING',
+			name: BirdyActivity,
+		}).then(() => console.log('Reset status'));
+	}
+}, 120000);

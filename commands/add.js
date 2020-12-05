@@ -40,7 +40,7 @@ module.exports = {
 			video = vid.link;
 			loadingmsg.delete().catch(() => console.log('Had a problem deleting this message.'));
 		}
-		const server = servers[message.guild.id];
+		const server = servers.find(s => s.id == message.guild.id);
 		if (!server.queue) return message.channel.send('Looks like there isn\'t a queue. Weird how you got here.');
 		const info = await ytdl.getBasicInfo(`${video}`);
 		let videothumb;
@@ -50,6 +50,7 @@ module.exports = {
 		if(!info.videoDetails.thumbnail.thumbnails[4]) videothumb = info.videoDetails.thumbnail.thumbnails[3].url;
 		if (info.videoDetails.thumbnail.thumbnails[4]) videothumb = info.videoDetails.thumbnail.thumbnails[4].url;
 		let song = {
+			msgauthor: message.author,
 			title: info.videoDetails.title,
 			url: info.videoDetails.video_url,
 			author: info.videoDetails.author.name,

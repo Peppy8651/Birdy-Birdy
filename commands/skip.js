@@ -10,7 +10,7 @@ module.exports = {
 		if (message.member.voice.channel.id != message.guild.me.voice.channel.id) return message.channel.send('Looks like there isn\'t anything playing in this channel.');
 		const command = '>skip ';
 		const args = message.content.slice(command.length).trim().split(/ +/);
-		const server = servers[message.guild.id];
+		const server = servers.find(s => s.id == message.guild.id);
 		if (!args[0]) {
 			if (server.loopvalue == true) {
 				server.queue.shift();
