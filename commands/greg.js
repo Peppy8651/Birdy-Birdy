@@ -9,7 +9,7 @@ module.exports = {
 		const user = message.mentions.users.first() || client.users.cache.get(`${args[0]}`) || client.users.cache.find(u => u.tag == `${args[0]}`);
 		const canvas = Canvas.createCanvas(1289, 1024);
 		const ctx = canvas.getContext('2d');
-		const background = await Canvas.loadImage('C:/Users/Owner/Documents/BirdyBirdy/commands/assets/greg.png');
+		const background = await Canvas.loadImage('./commands/assets/greg.png');
 		ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 		let avatar;
 		if (user) avatar = await Canvas.loadImage(user.displayAvatarURL({ format: 'png' }));

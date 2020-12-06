@@ -8,7 +8,7 @@
  */
 class ClientServer {
     constructor(guildID, client) {
-        if (!guildID || guildID == undefined) throw new Error('This guild is not defined!');
+        if (!guildID || guildID === undefined) throw new Error('This guild is not defined!');
         this.id = guildID;
         this.id = String(this.id);
         const guild = client.guilds.cache.get(this.id);

@@ -25,8 +25,7 @@ module.exports = {
 				.setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
 				.setDescription(`**${member}** was **banned** by **${message.author}**!`)
 				.addFields(
-					{ name: 'Reason', value: reason },
-				)
+					{ name: 'Reason', value: reason })
 				.setTimestamp();
 			message.channel.send(embed);
 		}

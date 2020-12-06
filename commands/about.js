@@ -4,12 +4,12 @@ const PEPPY_ID = '490548233601417223';
 module.exports = {
 	name: 'about',
 	description: 'about command',
-	async execute(message, client) {
+	execute(message, client) {
 		const embed = new Discord.MessageEmbed()
 			.setTitle('**About Birdy Birdy**')
 			.setColor(0x00ff00)
-			.setThumbnail(client.user.displayAvatarURL())
-			.addFields(
+			.setThumbnail(client.user.displayAvatarURL());
+			embed.addFields(
 				{ name: 'Details', value: `**Prefix**: ${globalPrefix}
 **Version**: ${version}	
 **Tag**: ${client.user.tag}
@@ -17,9 +17,8 @@ module.exports = {
 **Discord Library**: discord.js
 **Creator/Owner**: <@${PEPPY_ID}>
 
-Any suggestions or feedback? Message my owner!` },
-			)
-			.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
+Any suggestions or feedback? Message my owner!` });
+    embed.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
 		message.channel.send(embed);
 	},
 };

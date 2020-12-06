@@ -4,7 +4,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable indent */
 const Discord = require('discord.js');
-const fetch = require('node-fetch');
+const nodefetch = require('node-fetch');
 const fs = require('fs');
 module.exports = {
     name: 'meme',
@@ -32,19 +32,19 @@ module.exports = {
 async function memeChecker(message) {
     fs.readFile('../memes.json', 'utf8', async function(err, data) {
         if (err) {
-            const res = await fetch('https://api.reddit.com/r/memes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
-            fs.writeFile('../memes.json', JSON.stringify(res), async function(ror) {
+            const res = await nodefetch('https://api.reddit.com/r/memes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
+            fs.writeFile('./memes.json', JSON.stringify(res), async function(ror) {
                 if (ror) {
                     message.channel.send('Could not fetch your meme.');
                     return;
                 }
             });
         }
-        if (data) {
+        else if (data) {
             const d = JSON.parse(`${data}`);
             if (!d.data) {
-                const res = await fetch('https://api.reddit.com/r/memes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
-                fs.writeFile('C:/Users/Owner/Documents/BirdyBirdy/memes.json', JSON.stringify(res), async function(p) {
+                const res = await nodefetch('https://api.reddit.com/r/memes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
+                fs.writeFile('./memes.json', JSON.stringify(res), async function(p) {
                     if (p) {
                         message.channel.send('Sorry, couldn\'t fetch your meme.');
                         return;
@@ -52,49 +52,45 @@ async function memeChecker(message) {
                 });
                 const time = new Date();
                 const hour = time.getHours();
-                const memeCheck = require('C:/Users/Owner/Documents/BirdyBirdy/memechecker.json');
-                if (memeCheck.memes == hour) return;
+                const memeCheck = require('../memechecker.json');
                 const memeCheckyHour = {
-                    memes: hour
+                    meme: hour
                 };
-                fs.writeFile('C:/Users/Owner/Documents/BirdyBirdy/memechecker.json', JSON.stringify(memeCheckyHour), function(err) {
+                fs.writeFile('./memechecker.json', JSON.stringify(memeCheckyHour), function(err) {
                     if (err) console.log('Error', err);
-                    delete require.cache[require.resolve('C:/Users/Owner/Documents/BirdyBirdy/memechecker.json')];
+                    delete require.cache[require.resolve('../memechecker.json')];
                 });
             }
             else {
                 const time = new Date();
                 const hour = time.getHours();
-                const hoursToUpdate = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24];
-                if (hoursToUpdate.some(h => h == hour) == true) {
-                    const memeCheck = require('C:/Users/Owner/Documents/BirdyBirdy/memechecker.json');
-                    if (memeCheck.memes == hour) return;
-                    const res = await fetch('https://api.reddit.com/r/memes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
-                    fs.writeFile('C:/Users/Owner/Documents/BirdyBirdy/memes.json', JSON.stringify(res), async function(e) {
+                    const memeCheck = require('../memechecker.json');
+                    if (memeCheck.meme === hour) return;
+                    const res = await nodefetch('https://api.reddit.com/r/memes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
+                    fs.writeFile('./memes.json', JSON.stringify(res), async function(e) {
                         if (e) {
                             message.channel.send('Sorry, couldn\'t fetch your meme.');
                             return;
                         }
-                        delete require.cache[require.resolve('C:/Users/Owner/Documents/BirdyBirdy/memes.json')];
+                        delete require.cache[require.resolve('../memes.json')];
                     });
                     const memeCheckyHour = {
                         meme: hour
                     };
-                    fs.writeFile('C:/Users/Owner/Documents/BirdyBirdy/memechecker.json', JSON.stringify(memeCheckyHour), function(err) {
-                        if (err) console.log('Error', err);
-                        delete require.cache[require.resolve('C:/Users/Owner/Documents/BirdyBirdy/memechecker.json')];
+                    fs.writeFile('./memechecker.json', JSON.stringify(memeCheckyHour), async function(err) {
+                        if (err) console.log('Error:', err);
+                        delete require.cache[require.resolve('../memechecker.json')];
                     });
-                }
             }
         }
     });
 }
 
 async function dankMemeChecker(message) {
-    fs.readFile('../memes.json', 'utf8', async function(err, data) {
+    fs.readFile('../dankmemes.json', 'utf8', async function(err, data) {
         if (err) {
-            const res = await fetch('https://api.reddit.com/r/memes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
-            fs.writeFile('../memes.json', JSON.stringify(res), async function(ror) {
+            const res = await nodefetch('https://api.reddit.com/r/dankmemes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
+            fs.writeFile('./dankmemes.json', JSON.stringify(res), async function(ror) {
                 if (ror) {
                     message.channel.send('Could not fetch your meme.');
                     return;
@@ -104,8 +100,8 @@ async function dankMemeChecker(message) {
         if (data) {
             const d = JSON.parse(`${data}`);
             if (!d.data) {
-                const res = await fetch('https://api.reddit.com/r/dankmemes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
-                fs.writeFile('C:/Users/Owner/Documents/BirdyBirdy/dankmemes.json', JSON.stringify(res), async function(p) {
+                const res = await nodefetch('https://api.reddit.com/r/dankmemes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
+                fs.writeFile('./dankmemes.json', JSON.stringify(res), async function(p) {
                     if (p) {
                         message.channel.send('Sorry, couldn\'t fetch your meme.');
                         return;
@@ -113,39 +109,36 @@ async function dankMemeChecker(message) {
                 });
                 const time = new Date();
                 const hour = time.getHours();
-                const memeCheck = require('C:/Users/Owner/Documents/BirdyBirdy/memechecker.json');
-                if (memeCheck.memes == hour) return;
+                const memeCheck = require('../memechecker.json');
+                if (memeCheck.meme == hour) return;
                 const memeCheckyHour = {
-                    memes: hour,
+                    meme: hour,
                 };
-                fs.writeFile('C:/Users/Owner/Documents/BirdyBirdy/memechecker.json', JSON.stringify(memeCheckyHour), function(err) {
+                fs.writeFile('./memechecker.json', JSON.stringify(memeCheckyHour), function(err) {
                     if (err) console.log('Error', err);
-                    delete require.cache[require.resolve('C:/Users/Owner/Documents/BirdyBirdy/memechecker.json')];
+                    delete require.cache[require.resolve('../memechecker.json')];
                 });
             }
             else {
                 const time = new Date();
                 const hour = time.getHours();
-                const hoursToUpdate = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24];
-                if (hoursToUpdate.some(h => h == hour) == true) {
-                    const memeCheck = require('C:/Users/Owner/Documents/BirdyBirdy/memechecker.json');
+                    const memeCheck = require('../memechecker.json');
                     if (memeCheck.memes == hour) return;
-                    const res = await fetch('https://api.reddit.com/r/dankmemes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
-                    fs.writeFile('C:/Users/Owner/Documents/BirdyBirdy/dankmemes.json', JSON.stringify(res), async function(e) {
+                    const res = await nodefetch('https://api.reddit.com/r/dankmemes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
+                    fs.writeFile('./dankmemes.json', JSON.stringify(res), async function(e) {
                         if (e) {
                             message.channel.send('Sorry, couldn\'t fetch your meme.');
                             return;
                         }
-                        delete require.cache[require.resolve('C:/Users/Owner/Documents/BirdyBirdy/dankmemes.json')];
+                        delete require.cache[require.resolve('../dankmemes.json')];
                     });
                     const memeCheckyHour = {
-                        memes: hour,
+                        meme: hour,
                     };
-                    fs.writeFile('C:/Users/Owner/Documents/BirdyBirdy/memechecker.json', JSON.stringify(memeCheckyHour), function(err) {
+                    fs.writeFile('./memechecker.json', JSON.stringify(memeCheckyHour), function(err) {
                         if (err) console.log('Error', err);
-                        delete require.cache[require.resolve('C:/Users/Owner/Documents/BirdyBirdy/memechecker.json')];
+                        delete require.cache[require.resolve('../memechecker.json')];
                     });
-                }
             }
         }
     });
@@ -185,7 +178,6 @@ async function fetchMeme(message, subreddit) {
                     return;
                 });
             if (x === 15) {
-                message.channel.send(`**TIP**
-Hey, these memes come from Reddit; therefore, if you want to get more memes, you can either click the hyperlink as the title or you can go to Reddit and find memes!`);
+            message.channel.send('Hey, these memes come from Reddit; therefore, if you want to get more memes, you can either click the hyperlink as the title or you can go to Reddit and find memes!');
             }
 }

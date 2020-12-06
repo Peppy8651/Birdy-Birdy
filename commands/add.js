@@ -9,7 +9,7 @@ function secondsToHms(d) {
 	let m = Math.floor(d % 3600 / 60);
 	let s = Math.floor(d % 3600 % 60);
 	let hDisplay = h > 9 ? h + (h == 1 ? ':' : ':') : h > 0 ? h + ':' : '';
-	let mDisplay = m > 9 ? m + (m == 1 ? ':' : ':') : h == 0 ? m + (m == 1 ? ':' : ':') : m > 0 ? '0' + m + (m == 1 ? ':' : ':') : '00:';
+	let mDisplay = m > 9 ? m + (m == 1 ? ':' : ':') : h === 0 ? m + (m == 1 ? ':' : ':') : m > 0 ? '0' + m + (m == 1 ? ':' : ':') : '00:';
 	let sDisplay = s > 9 ? s + (s == 1 ? '' : '') : s > 0 ? '0' + s + (s == 1 ? '' : '') : '00';
 	return hDisplay + mDisplay + sDisplay;
 }
@@ -19,7 +19,7 @@ module.exports = {
 	description: 'add command for Birdy Birdy',
 	async execute(message, servers, playingMap) {
 		if (!message.member.voice.channel) return message.channel.send('You can\'t use this command outside of a voice channel!');
-		if (playingMap.has(`${message.guild.id}`, 'Now Playing') == false) return message.channel.send('You can\'t add anything to a non-existant queue!');
+		if (playingMap.has(`${message.guild.id}`, 'Now Playing') === false) return message.channel.send('You can\'t add anything to a non-existant queue!');
 		if (message.member.voice.channelID != message.guild.me.voice.channelID) return message.channel.send('You can\'t add anything to a non-existant queue!');
 		const command = '>add ';
 		const args = message.content.slice(command.length).trim().split(/ -/);
