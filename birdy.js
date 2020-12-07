@@ -263,7 +263,7 @@ client.on('message', async message => {
 });
 
 client.on('voiceStateUpdate', (oldState, newState) => {
-	if (!newState.channel.guild) return;
+	if (!newState.guild) return;
 	if (!newState.channel && playingMap.has(`${newState.guild.id}`, 'Now Playing')) {
 		playingMap.delete(`${newState.guild.id}`, 'Now Playing');
 		const server = servers.find(s => s.id == newState.guild.id);
