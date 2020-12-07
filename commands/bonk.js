@@ -4,7 +4,6 @@ const Canvas = require('canvas');
 module.exports = {
 	name: 'bonk',
     description: 'HORNY BONK',
-    beta: true,
 	async execute(message) {
         const command = '>bonk ';
 		const args = message.content.slice(command.length).trim().split(/ -/);

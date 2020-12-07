@@ -16,11 +16,14 @@ client.setMaxListeners(100);
 client.commands = new Discord.Collection();
 const timers = new Discord.Collection();
 // eslint-disable-next-line no-unused-vars
-async function BetaCheck(msg) {
-	const Cob = await client.guilds.fetch('774316995897982980');
-	const LS = await client.guilds.fetch('699461818422394910');
-	const DFMD = await client.guilds.fetch('615884282040287242');
-	if (msg.guild.id != Cob.id && msg.guild.id != LS.id && msg.guild.id != DFMD.id) return msg.channel.send('This command is currently being tested and cannot be used outside of featured servers.');
+function BetaCheck(msg) {
+	if (msg.guild.id != '774316995897982980' && msg.guild.id != '699461818422394910' && msg.guild.id != '615884282040287242') {
+		msg.channel.send('This command is currently being tested and cannot be used outside of featured servers.');
+		return false;
+	}
+	else {
+		return true;
+	}
 }
 
 const playingMap = new Map();
@@ -113,7 +116,7 @@ client.on('message', async message => {
 		const server = servers.find(s => s.id == message.guild.id);
 		if (!command) return;
 		if (!command.execute) return;
-		if (command.beta == true) BetaCheck(message);
+		if (command.beta == true && BetaCheck(message) == false) return;
 		if (command.authorcheck == true && message.author.id == client.user.id) return;
 		if (cmd == 'changelog') return command.execute(message, client, version);
 		if (cmd == 'timer') return command.execute(message, timers);
@@ -177,11 +180,11 @@ client.on('message', async message => {
 	}
 });
 
-client.on('message', message => {
-	if (!message.guild) return;
-	if (!message.guild.me.voice.channel && playingMap.has(`${message.guild.id}`, 'Now Playing')) {
-		playingMap.delete(`${message.guild.id}`, 'Now Playing');
-		const server = servers.find(s => s.id == message.guild.id);
+client.on('voiceStateUpdate', (oldState, newState) => {
+	if (!newState.channel.guild) return;
+	if (!newState.channel && playingMap.has(`${newState.guild.id}`, 'Now Playing')) {
+		playingMap.delete(`${newState.guild.id}`, 'Now Playing');
+		const server = servers.find(s => s.id == newState.guild.id);
 		server.queue.splice(0, server.queue.length);
 		server.loopvalue = false;
 		server.loopqueue = false;
