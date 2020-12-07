@@ -262,14 +262,11 @@ client.on('message', async message => {
 	}
 });
 
-client.on('message', message => {
-	if (!message.guild) return;
-	if (
-		!message.guild.me.voice.channel &&
-		playingMap.has(`${message.guild.id}`, 'Now Playing')
-	) {
-		playingMap.delete(`${message.guild.id}`, 'Now Playing');
-		const server = servers.find(s => s.id == message.guild.id);
+client.on('voiceStateUpdate', (oldState, newState) => {
+	if (!newState.channel.guild) return;
+	if (!newState.channel && playingMap.has(`${newState.guild.id}`, 'Now Playing')) {
+		playingMap.delete(`${newState.guild.id}`, 'Now Playing');
+		const server = servers.find(s => s.id == newState.guild.id);
 		server.queue.splice(0, server.queue.length);
 		server.loopvalue = false;
 		server.loopqueue = false;
