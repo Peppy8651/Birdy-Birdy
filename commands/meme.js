@@ -11,13 +11,8 @@ module.exports = {
     cooldown: 2.5,
     description: 'meme command that fetches memes from reddit',
 	async execute(message) {
-        try {
-            memeChecker(message);
-            dankMemeChecker(message);
-        }
-        catch {
-            console.log('There was a problem with the memeChecker and dankMemeChecker functions.');
-        }
+        memeChecker(message);
+        dankMemeChecker(message);
         const command = '>meme ';
         const args = message.content.slice(command.length).trim().split(/ -/);
         const subreddits = ['memes', 'dankmemes', 'memes', 'dankmemes', 'memes', 'dankmemes'];
@@ -30,7 +25,7 @@ module.exports = {
 };
 
 async function memeChecker(message) {
-    fs.readFile('../memes.json', 'utf8', async function(err, data) {
+    fs.readFile('./memes.json', 'utf8', async function(err, data) {
         if (err) {
             const res = await nodefetch('https://api.reddit.com/r/memes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
             fs.writeFile('./memes.json', JSON.stringify(res), async function(ror) {
@@ -40,7 +35,7 @@ async function memeChecker(message) {
                 }
             });
         }
-        else if (data) {
+        if (data) {
             const d = JSON.parse(`${data}`);
             if (!d.data) {
                 const res = await nodefetch('https://api.reddit.com/r/memes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
@@ -49,16 +44,6 @@ async function memeChecker(message) {
                         message.channel.send('Sorry, couldn\'t fetch your meme.');
                         return;
                     }
-                });
-                const time = new Date();
-                const hour = time.getHours();
-                const memeCheck = require('../memechecker.json');
-                const memeCheckyHour = {
-                    meme: hour
-                };
-                fs.writeFile('./memechecker.json', JSON.stringify(memeCheckyHour), function(err) {
-                    if (err) console.log('Error', err);
-                    delete require.cache[require.resolve('../memechecker.json')];
                 });
             }
             else {
@@ -74,20 +59,13 @@ async function memeChecker(message) {
                         }
                         delete require.cache[require.resolve('../memes.json')];
                     });
-                    const memeCheckyHour = {
-                        meme: hour
-                    };
-                    fs.writeFile('./memechecker.json', JSON.stringify(memeCheckyHour), async function(err) {
-                        if (err) console.log('Error:', err);
-                        delete require.cache[require.resolve('../memechecker.json')];
-                    });
             }
         }
     });
 }
 
 async function dankMemeChecker(message) {
-    fs.readFile('../dankmemes.json', 'utf8', async function(err, data) {
+    fs.readFile('./dankmemes.json', 'utf8', async function(err, data) {
         if (err) {
             const res = await nodefetch('https://api.reddit.com/r/dankmemes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
             fs.writeFile('./dankmemes.json', JSON.stringify(res), async function(ror) {
@@ -123,7 +101,7 @@ async function dankMemeChecker(message) {
                 const time = new Date();
                 const hour = time.getHours();
                     const memeCheck = require('../memechecker.json');
-                    if (memeCheck.memes == hour) return;
+                    if (memeCheck.meme === hour) return;
                     const res = await nodefetch('https://api.reddit.com/r/dankmemes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
                     fs.writeFile('./dankmemes.json', JSON.stringify(res), async function(e) {
                         if (e) {

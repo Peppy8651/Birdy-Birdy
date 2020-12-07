@@ -8,7 +8,7 @@
 const http = require('http');
 const server = http.createServer((req, res) => {
 	res.writeHead(200);
-	res.end('ok');
+	res.end('ok ok ok');
 });
 server.listen(3000);
 const Discord = require('discord.js');
