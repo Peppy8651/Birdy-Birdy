@@ -15,6 +15,18 @@ function secondsToHms(d) {
 	return hDisplay + mDisplay + sDisplay;
 }
 
+function getStream(message, server) {
+  let stream;
+  try {
+    stream = ytdl(`${server.queue[0].url}`, { filter: 'audioonly', dlChunkSize: 0 });
+  }
+  catch(err) {
+      message.channel.send(`Unable to play song. Error: ${err.message}`);
+      server.queue.shift();
+      if (server.queue[0]) return getStream(message, server);
+  }
+  return stream;
+}
 module.exports = {
 	name: 'play',
     description: 'New play command',
@@ -24,6 +36,7 @@ module.exports = {
 		const command = ('>play ');
 		const args = message.content.slice(command.length).trim().split();
 		const query = args.join(' ');
+    if (!query) return message.channel.send('*Proceeds to playing nothing in nonexistant voice channel*');
 		if (message.content.toLowerCase().includes('https://www.youtube.com/watch?') || message.content.toLowerCase().includes('https://youtu.be/') || message.content.toLowerCase().includes('https://m.youtube.com/watch?')) {
 			video = query;
 			if (ytdl.validateURL(video) === false) return message.channel.send('This is not a valid URL!');
@@ -36,16 +49,16 @@ module.exports = {
 			if (!res) return;
 			const vid = res.items.filter(i => i.type === 'video')[0];
 			if (!vid) return message.channel.send('Couldn\'t find a video, at least correctly.');
-			video = vid.link;
+			video = vid.url;
 			loadingmsg.delete().catch(() => console.log('Had a problem deleting this message.'));
 		}
 		let info = await ytdl.getBasicInfo(video);
 		let videothumb;
-		if (!info.videoDetails.thumbnail.thumbnails[1]) videothumb = info.videoDetails.thumbnail.thumbnails[0].url;
-		if (!info.videoDetails.thumbnail.thumbnails[2]) videothumb = info.videoDetails.thumbnail.thumbnails[1].url;
-		if (!info.videoDetails.thumbnail.thumbnails[3]) videothumb = info.videoDetails.thumbnail.thumbnails[2].url;
-		if(!info.videoDetails.thumbnail.thumbnails[4]) videothumb = info.videoDetails.thumbnail.thumbnails[3].url;
-		if (info.videoDetails.thumbnail.thumbnails[4]) videothumb = info.videoDetails.thumbnail.thumbnails[4].url;
+		if (!info.videoDetails.thumbnails[1]) videothumb = info.videoDetails.thumbnails[0].url;
+		if (!info.videoDetails.thumbnails[2]) videothumb = info.videoDetails.thumbnails[1].url;
+		if (!info.videoDetails.thumbnails[3]) videothumb = info.videoDetails.thumbnails[2].url;
+		if(!info.videoDetails.thumbnails[4]) videothumb = info.videoDetails.thumbnails[3].url;
+		if (info.videoDetails.thumbnails[4]) videothumb = info.videoDetails.thumbnails[4].url;
 		let title = info.videoDetails.title;
 		if (title.startsWith('**') && title.endsWith('**')) {
 			const songtitle = title.slice(2).split('*');
@@ -82,8 +95,9 @@ module.exports = {
 			// eslint-disable-next-line no-inner-declarations
 			async function playSong() {
 				if (playingMap.has(`${message.guild.id}`, 'Now Playing') == false) playingMap.set(`${message.guild.id}`, 'Now Playing');
-				const stream = ytdl(`${server.queue[0].url}`, { filter: 'audioonly', dlChunkSize: 0 });
+        const stream = getStream(message, server);
 				server.dispatcher = message.guild.voice.connection.play(stream);
+        let msg;
 				server.dispatcher.on('start', async () => {
 					if (server.errorcount != 0) server.errorcount = 0;
 					const embed = new Discord.MessageEmbed()
@@ -100,11 +114,12 @@ module.exports = {
 							{ name: 'Upload Date', value: server.queue[0].uploadDate, inline: true },
 						);
 					}
-					message.channel.send(embed);
+					msg = await message.channel.send(embed);
 					console.log(`Now playing in ${message.guild.name}!`);
 					if (!message.guild.voice.selfDeaf) message.guild.voice.connection.voice.setSelfDeaf(true).then(() => console.log('Birdy deafened'));
 				});
 				server.dispatcher.on('finish', async () => {
+          const save = server.queue[0];
 					if (server.loopvalue == false && server.loopqueue == false) server.queue.shift();
 					if (server.loopvalue == false && server.loopqueue == true) server.queue.push(server.queue.shift());
 					switch(server.queue.length) {
@@ -119,7 +134,11 @@ module.exports = {
 					default:
 						if (server.loopvalue == false) server.loopcount = 0;
 						if (server.loopvalue == true) server.loopcount++;
+            if (msg.deleted == false && msg.embeds[0].description == `**[${save.title}](${save.url})**` && msg.id != message.channel.messages.cache.first().id) {
+              msg.delete().catch(() => console.log("Unable to delete song embed."));
+            }
 						playSong();
+            msg = null;
 						break;
 					}
 				});
@@ -129,10 +148,12 @@ module.exports = {
 						message.channel.send('I could not play your music so I give up and will play the next song.');
 						server.queue.shift();
 						playSong();
+            msg = null;
 					}
 					else {
 						message.channel.send('There was an error while playing your music. I will now attempt to replay your song.');
 						playSong();
+            msg = null;
 					}
 				});
 			}

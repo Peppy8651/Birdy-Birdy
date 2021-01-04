@@ -11,8 +11,6 @@ module.exports = {
     cooldown: 2.5,
     description: 'meme command that fetches memes from reddit',
 	async execute(message) {
-        memeChecker(message);
-        dankMemeChecker(message);
         const command = '>meme ';
         const args = message.content.slice(command.length).trim().split(/ -/);
         const subreddits = ['memes', 'dankmemes', 'memes', 'dankmemes', 'memes', 'dankmemes'];
@@ -27,7 +25,7 @@ module.exports = {
 async function memeChecker(message) {
     fs.readFile('./memes.json', 'utf8', async function(err, data) {
         if (err) {
-            const res = await nodefetch('https://api.reddit.com/r/memes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
+            const res = await nodefetch('https://api.reddit.com/r/memes/hot.json?count=2&sort=hot&t=day&limit=100').then(response => response.json());
             fs.writeFile('./memes.json', JSON.stringify(res), async function(ror) {
                 if (ror) {
                     message.channel.send('Could not fetch your meme.');
@@ -38,7 +36,7 @@ async function memeChecker(message) {
         if (data) {
             const d = JSON.parse(`${data}`);
             if (!d.data) {
-                const res = await nodefetch('https://api.reddit.com/r/memes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
+                const res = await nodefetch('https://api.reddit.com/r/memes/hot.json?count=2&sort=hot&t=day&limit=100').then(response => response.json());
                 fs.writeFile('./memes.json', JSON.stringify(res), async function(p) {
                     if (p) {
                         message.channel.send('Sorry, couldn\'t fetch your meme.');
@@ -49,9 +47,10 @@ async function memeChecker(message) {
             else {
                 const time = new Date();
                 const hour = time.getHours();
+                const day = time.getDate();
                     const memeCheck = require('../memechecker.json');
-                    if (memeCheck.meme === hour) return;
-                    const res = await nodefetch('https://api.reddit.com/r/memes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
+                    if (memeCheck.meme == hour && memeCheck.day == day) return;
+                    const res = await nodefetch('https://api.reddit.com/r/memes/hot.json?count=2&sort=hot&t=day&limit=100').then(response => response.json());
                     fs.writeFile('./memes.json', JSON.stringify(res), async function(e) {
                         if (e) {
                             message.channel.send('Sorry, couldn\'t fetch your meme.');
@@ -67,7 +66,7 @@ async function memeChecker(message) {
 async function dankMemeChecker(message) {
     fs.readFile('./dankmemes.json', 'utf8', async function(err, data) {
         if (err) {
-            const res = await nodefetch('https://api.reddit.com/r/dankmemes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
+            const res = await nodefetch('https://api.reddit.com/r/dankmemes/hot.json?count=2&sort=hot&t=day&limit=100').then(response => response.json());
             fs.writeFile('./dankmemes.json', JSON.stringify(res), async function(ror) {
                 if (ror) {
                     message.channel.send('Could not fetch your meme.');
@@ -78,7 +77,7 @@ async function dankMemeChecker(message) {
         if (data) {
             const d = JSON.parse(`${data}`);
             if (!d.data) {
-                const res = await nodefetch('https://api.reddit.com/r/dankmemes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
+                const res = await nodefetch('https://api.reddit.com/r/dankmemes/hot.json?count=2&sort=hot&t=day&limit=100').then(response => response.json());
                 fs.writeFile('./dankmemes.json', JSON.stringify(res), async function(p) {
                     if (p) {
                         message.channel.send('Sorry, couldn\'t fetch your meme.');
@@ -87,10 +86,12 @@ async function dankMemeChecker(message) {
                 });
                 const time = new Date();
                 const hour = time.getHours();
+                const day = time.getDate();
                 const memeCheck = require('../memechecker.json');
-                if (memeCheck.meme == hour) return;
+                if (memeCheck.meme == hour && memeCheck.day == day) return;
                 const memeCheckyHour = {
                     meme: hour,
+                    day: day,
                 };
                 fs.writeFile('./memechecker.json', JSON.stringify(memeCheckyHour), function(err) {
                     if (err) console.log('Error', err);
@@ -100,9 +101,10 @@ async function dankMemeChecker(message) {
             else {
                 const time = new Date();
                 const hour = time.getHours();
+                const day = time.getDate();
                     const memeCheck = require('../memechecker.json');
-                    if (memeCheck.meme === hour) return;
-                    const res = await nodefetch('https://api.reddit.com/r/dankmemes/hot.json?count=2&sort=hot&t=week&limit=100').then(response => response.json());
+                    if (memeCheck.meme == hour && memeCheck.day == day) return;
+                    const res = await nodefetch('https://api.reddit.com/r/dankmemes/hot.json?count=2&sort=hot&t=day&limit=100').then(response => response.json());
                     fs.writeFile('./dankmemes.json', JSON.stringify(res), async function(e) {
                         if (e) {
                             message.channel.send('Sorry, couldn\'t fetch your meme.');
@@ -111,7 +113,8 @@ async function dankMemeChecker(message) {
                         delete require.cache[require.resolve('../dankmemes.json')];
                     });
                     const memeCheckyHour = {
-                        meme: hour,
+                      meme: hour,
+                      day: day,
                     };
                     fs.writeFile('./memechecker.json', JSON.stringify(memeCheckyHour), function(err) {
                         if (err) console.log('Error', err);
@@ -123,13 +126,20 @@ async function dankMemeChecker(message) {
 }
 
 async function fetchMeme(message, subreddit) {
-    const results = require(`../${subreddit}.json`);
+  let results;
+  try {
+    results = await nodefetch(`https://BirdyMemeAPI.peppy8651.repl.co/${subreddit}/randomPost.json`).then(response => response.json())
+  }
+  catch (e) {
+    results = undefined;
+  }
+    if (!results) return message.channel.send('Hmm, looks like I can\'t get any results. DM Peppy#8651 about this and they will fix this.');
             const postnum = Math.floor(Math.random() * 99);
-            let image = `${results.data.children[postnum].data.url_overridden_by_dest}`;
+            let image = `${results.data.url_overridden_by_dest}`;
             if (image.endsWith('.gifv')) {
                 return fetchMeme(message, subreddit);
             }
-            const over18 = results.data.children[postnum].data.over_18;
+            const over18 = results.data.over_18;
             if (over18 == true) {
                 return fetchMeme(message, subreddit);
             }
@@ -144,10 +154,10 @@ async function fetchMeme(message, subreddit) {
             if (image.startsWith('https://gfycat.com/')) return fetchMeme(message, subreddit);
             var x = Math.floor(Math.random() * 30);
                 const embed = new Discord.MessageEmbed()
-                    .setAuthor(`${results.data.children[postnum].data.subreddit_name_prefixed} • Posted by u/${results.data.children[postnum].data.author}`)
+                    .setAuthor(`${results.data.subreddit_name_prefixed} • Posted by u/${results.data.author}`)
                     .setColor(0xFF4500)
-                    .setTitle(`**${results.data.children[postnum].data.title}**`)
-                    .setURL(`https://www.reddit.com${results.data.children[postnum].data.permalink}`)
+                    .setTitle(`**${results.data.title}**`)
+                    .setURL(`https://www.reddit.com${results.data.permalink}`)
                     .setImage(image)
                     .setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
                     embed.setTimestamp();

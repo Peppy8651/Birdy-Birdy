@@ -34,7 +34,7 @@ module.exports = {
 				.setTitle('❌Ban Failure❌')
 				.setDescription(`I couldn't do that due to my role not having the right position in the hierarchy or another problem related to roles or permissions. If it's related to the hierarchy, try to relocate my role to somewhere near the top.
 
-Here's how it should look:`)
+Here's how it could look like:`)
 				.setImage('https://cdn.discordapp.com/attachments/615884282476363776/760904548243341392/Screenshot_2020-09-30_113245yes.png')
 				.setColor(0xFF0000)
 				.setFooter('❌Ban Failure❌')

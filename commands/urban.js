@@ -4,6 +4,7 @@ const fetch = require('node-fetch');
 module.exports = {
 	name:'urban',
 	description:'urban dictionary command using node-fetch and urban dictionary api',
+  cooldown: 2.5,
 	async execute(message) {
 		const command = '>urban ';
 		const args = message.content.slice(command.length).trim().split(/ -/);

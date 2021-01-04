@@ -1,12 +1,14 @@
 // eslint-disable-next-line no-unused-vars
 const Discord = require('discord.js');
-
+const e = true;
 module.exports = {
 	name: 'info',
 	description: 'info command',
 	async execute(message) {
+	  if (e === true) return message.channel.send('Command is disabled for now, will fix later.');
 		const member = message.mentions.members.first();
 		if (message.content.toLowerCase().startsWith('>info' + ' server')) {
+		  const createdAt = message.guild.createdAt.toLocaleString('en-US', { timeZone: 'UTC' });
 			const embed1 = new Discord.MessageEmbed()
 				.setTitle(`${message.guild.name}`)
 				.setColor(message.guild.owner.displayHexColor)
@@ -19,6 +21,7 @@ Online: ${message.guild.members.cache.filter(members => members.presence.status 
 					{ name: 'Channels', value: `Text: ${message.guild.channels.cache.filter(c => c.type === 'text').size}
 Voice: ${message.guild.channels.cache.filter(c => c.type === 'voice').size}` },
 					{ name: 'Roles', value: message.guild.roles.cache.size },
+					{ name: 'Created At', value: ` ${createdAt} UTC`, inline: true },
 					{ name: 'Region', value: message.guild.region },
 					{ name: 'Guild ID', value: message.guild.id },
 				)

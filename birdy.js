@@ -5,14 +5,17 @@
 /* eslint-disable no-inline-comments */
 /* eslint-disable prefer-const */
 /* eslint-disable no-var */
+const replDB = require('@replit/database'); 
 const http = require('http');
 const server = http.createServer((req, res) => {
 	res.writeHead(200);
 	res.end('ok ok ok');
 });
+const fs = require('fs');
 server.listen(3000);
 const Discord = require('discord.js');
-const fs = require('fs');
+const SteamAPI = require('steamapi');
+const steam = new SteamAPI(`${process.env.SteamKey}`);
 const client = new Discord.Client();
 const { version } = require('./config.json');
 const { globalPrefix } = require('./config.json');
@@ -76,11 +79,14 @@ client.on('message', message => {
 });
 
 process.on('unhandledRejection', error => {
-	console.error('Unhandled promise rejection:', error);
+	console.log(`Got an error: ${error.message}. You should go check it out in /home/runner/Birdy-Birdy/errors`);
+  fs.writeFile(`./errors/${error.message}.txt`, error + error.stack, function(err) {
+    if (err) console.log(err);
+  });
 });
 
 client.on('message', message => {
-	if (!message.content.toLowerCase().startsWith(globalPrefix)) {
+	if (!message.content.toLowerCase().startsWith(globalPrefix) || message.author.bot == true) {
 		return;
 	}
 	if (message.content.toLowerCase().startsWith(globalPrefix + 'help')) {
@@ -182,6 +188,11 @@ client.on('message', message => {
 			cmd == 'reddit' ||
 			cmd == 'ping' ||
 			cmd == 'dog' ||
+      cmd == 'delete' ||
+      cmd == 'bonk' ||
+      cmd == 'greg' ||
+      cmd == 'sprite' ||
+      cmd == 'urban' ||
 			cmd == 'cat'
 		) {
 			if (!cooldowns.has(command.name)) {
@@ -209,14 +220,12 @@ client.on('message', message => {
 		if (cmd == 'turkeyfight') return command.execute(message, server, client);
 		if (
 			cmd == 'reload' ||
-			cmd == 'greg' ||
 			cmd == 'about' ||
-			cmd == 'sprite' ||
-			cmd == 'invite' ||
 			cmd == 'suggest' ||
 			cmd == 'fortune'
 		)
 			return command.execute(message, client);
+    if (cmd == 'steamgame' || cmd == 'steamuser' || cmd == 'steamsearch') return command.execute(message, steam);
 		if (cmd == 'play') {
 			if (!message.member.voice.channel)
 				return message.channel.send(
@@ -264,6 +273,7 @@ client.on('message', async message => {
 
 client.on('voiceStateUpdate', (oldState, newState) => {
 	if (!newState.guild) return;
+  if (newState.member.user.id != client.user.id) return;
 	if (!newState.channel && playingMap.has(`${newState.guild.id}`, 'Now Playing')) {
 		playingMap.delete(`${newState.guild.id}`, 'Now Playing');
 		const server = servers.find(s => s.id == newState.guild.id);
@@ -304,26 +314,19 @@ client.on('messageDelete', message => {
 	const server = servers.find(s => s.id == message.guild.id);
 	if (!server) return;
 	const time = new Date();
-	const timefiltered = `${time.getMonth() +
-		1}/${time.getDate()}/${time.getFullYear()}`;
-	let img;
-	h = time.getHours();
-	const ampm = h > 12 ? 'PM' : 'AM';
-	const hours = h > 12 ? h - 12 : h;
-	const m = time.getMinutes();
-	const minutes = m < 10 ? '0' + `${m}` : m == 0 ? '00' : m;
-	const stamp = `${hours}:${minutes} ${ampm}`;
+	const timetime = time.toLocaleString('en-US', { timeZone: 'UTC' });
 	if (!message.attachments.first()) img = undefined;
 	if (message.attachments.first()) img = message.attachments.first().proxyURL;
+  const createdAtTime = message.createdAt.toLocaleString('en-US', { timeZone: 'UTC' });
 	const msg = {
 		content: message.content,
 		channel: message.channel,
 		member: message.member,
 		author: message.author,
 		guild: message.guild,
-		time: timefiltered,
-		timestamp: stamp,
-		image: img
+		time: timetime,
+		image: img,
+    createdAt: createdAtTime
 	};
 	if (!server.snipe[0]) server.snipe.push(msg);
 	if (server.snipe[0]) {
@@ -398,7 +401,8 @@ client.on('messageReactionRemove', async (reaction, user) => {
 
 client.on('guildMemberRemove', async member => {
 	if (!member.guild) return;
-	const server = servers.find(s => s.id == member.guild.id);
+	const server = servers.find(s => s.id === member.guild.id);
+	if (!server) return;
 	for (var i = 0; i < server.giveaways.length; i++) {
 		if (
 			server.giveaways[i].users.some(
@@ -420,17 +424,13 @@ client.on('guildDelete', async guild => {
 
 // eslint-disable-next-line no-unused-vars
 let presence = setInterval(() => {
-	const Activity = client.user.presence.activities.find(
-		a => a.type == 'LISTENING'
-	);
+	const Activity = client.user.presence.activities.find(a => a.type == 'LISTENING');
 	if (!Activity) {
 		const command = client.commands.get('status');
 		const BirdyActivity = command.fetchStatus();
-		client.user
-			.setActivity(BirdyActivity, {
+		client.user.setActivity(BirdyActivity, {
 				type: 'LISTENING',
 				name: BirdyActivity
-			})
-			.then(() => console.log('Reset status'));
+    }).then(() => console.log('Reset status'));
 	}
 }, 120000);

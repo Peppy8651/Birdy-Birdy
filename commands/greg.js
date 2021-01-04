@@ -3,19 +3,23 @@ const Discord = require('discord.js');
 module.exports = {
 	name: 'greg',
 	description: 'greg command',
-	async execute(message, client) {
+  cooldown: 5,
+	async execute(message) {
 		const command = '>greg ';
 		const args = message.content.slice(command.length).trim().split(/ -/);
-		const user = message.mentions.users.first() || client.users.cache.get(`${args[0]}`) || client.users.cache.find(u => u.tag == `${args[0]}`);
-		const canvas = Canvas.createCanvas(1289, 1024);
+		const user = message.mentions.members.first() || message.guild.members.cache.get(`${args[0]}`) || message.guild.members.cache.find(u => u.user.tag == `${args[0]}`);
+		const canvas = Canvas.createCanvas(640, 512);
 		const ctx = canvas.getContext('2d');
-		const background = await Canvas.loadImage('./commands/assets/greg.png');
+		const background = await Canvas.loadImage('https://BirdyMemeAPI.peppy8651.repl.co/images/greg.jpg');
 		ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 		let avatar;
-		if (user) avatar = await Canvas.loadImage(user.displayAvatarURL({ format: 'png' }));
-		if (!user) avatar = await Canvas.loadImage(message.author.displayAvatarURL({ format: 'png' }));
-		ctx.drawImage(avatar, 315, 240, 250, 250);
-		const attachment = new Discord.MessageAttachment(canvas.toBuffer(), 'greggyboy.png');
-		message.channel.send(attachment);
+		if (user) avatar = await Canvas.loadImage(user.user.displayAvatarURL({ format: 'jpg' }));
+		if (!user) avatar = await Canvas.loadImage(message.author.displayAvatarURL({ format: 'jpg' }));
+		ctx.drawImage(avatar, 155, 125, 120, 120);
+		const attachment = new Discord.MessageAttachment(canvas.toBuffer(), 'greggyboy.jpeg');
+		const embed = new Discord.MessageEmbed();
+		embed.attachFiles([attachment]);
+		embed.setImage('attachment://greggyboy.jpeg')
+		message.channel.send(embed);
 	},
 };

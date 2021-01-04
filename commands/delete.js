@@ -1,6 +1,7 @@
 module.exports = {
 	name: 'delete',
 	command: 'delete command',
+  cooldown: 5,
 	authorcheck: true,
 	async execute(message) {
 		if (!message.guild.me.hasPermission('MANAGE_MESSAGES')) return message.channel.send('Sorry, I don\'t have the permissions to use this. Check my role and see if it has the permission MANAGE_MESSAGES enabled.');
@@ -14,14 +15,14 @@ module.exports = {
 		}
 		if (isNaN(amount)) return message.channel.send('This isn\'t a valid number!');
 		if(amount > 99 || amount < 1) return message.channel.send('You can\'t delete this number of messages!');
-		message.channel.bulkDelete(amount + 1, true).then(async () => {
+		message.channel.bulkDelete(amount + 1).then(async () => {
 			const msg = await message.channel.send(`Deleted ${amount} messages!`);
 			setTimeout(() => {
 				msg.delete().catch(() => console.log('Sorry, couldn\'t delete message'));
 			}, 2500);
 		}).catch(err => {
-			console.error(err);
-			message.channel.send('There was an error trying to delete messages in this channel!');
+      if (err.message == 'You can only bulk delete messages that are under 14 days old.') return message.channel.send('Sorry, but I cannot delete messages that are over 14 days old.');
+			message.channel.send(`There was an error trying to delete messages in this channel! Error: ${err.message}`);
 		});
 	},
 };

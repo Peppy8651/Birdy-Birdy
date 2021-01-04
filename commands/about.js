@@ -11,6 +11,7 @@ module.exports = {
 			.setThumbnail(client.user.displayAvatarURL());
 			embed.addFields(
 				{ name: 'Details', value: `**Prefix**: ${globalPrefix}
+**Servers**: ${client.guilds.cache.size}
 **Version**: ${version}	
 **Tag**: ${client.user.tag}
 **ID**: ${client.user.id}

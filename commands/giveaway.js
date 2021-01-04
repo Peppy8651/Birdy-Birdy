@@ -26,7 +26,7 @@ module.exports = {
 				.then(collected => {
 					if (collected.first().content.toLowerCase() == 'cancel') return message.channel.send('Okay, cancelling giveaway creation process.');
 					const channel = collected.first().mentions.channels.first() || message.guild.channels.cache.find(c => c.name == `${collected.first().content.toLowerCase()}`) || message.guild.channels.cache.get(collected.first().content.toLowerCase());
-					if (!channel) return message.channel.send('This isn\'t a channel... I will have to cancel the giveaway creation process. Next time remember that you have to ping a channel, put the channel name in your content, or add the channel ID in your content.');
+					if (!channel || channel.type == 'dm') return message.channel.send('This isn\'t a channel... I will have to cancel the giveaway creation process. Next time remember that you have to ping a channel, put the channel name in your content, or add the channel ID in your content.');
 					embed.setDescription('Now that you have added a channel, add what the prize is below this message.');
 					embed.addField('Channel', channel, true);
 					message.channel.send(embed).then(() => {

@@ -14,11 +14,27 @@ function secondsToHms(d) {
 	return hDisplay + mDisplay + sDisplay;
 }
 
+function getStream(message, server) {
+  let stream;
+  try {
+    stream = ytdl(`${server.queue[0].url}`, { filter: 'audioonly', dlChunkSize: 0 });
+  }
+  catch(err) {
+      message.channel.send(`Unable to play song. Error: ${err.message}`);
+      server.queue.shift();
+      if (server.queue[0]) return getStream(message, server);
+      return;
+  }
+  return stream;
+}
+
 module.exports = {
 	name: 'search',
 	description: 'search command for searching music',
 	async execute(message, servers, playingMap) {
 		if (!message.member.voice.channel) return message.channel.send('You cannot use this command outside of a voice channel.');
+    if (!message.guild.me.hasPermission('CONNECT')) return message.channel.send('I cannot connect to the voice channel!');
+			if (!message.guild.me.hasPermission('SPEAK')) return message.channel.send('I cannot speak in the voice channel!');
 		if (playingMap.has(`${message.guild.id}`, 'Now Playing') == true && message.member.voice.channelID != message.guild.me.voice.channelID) return message.channel.send('There is already someone playing music in this server!');
 		const command = '>search ';
 		const args = message.content.slice(command.length).trim().split(/ -/);
@@ -36,7 +52,7 @@ module.exports = {
 		for (var i = 0; i < index; i++) {
 			const vid = res.items.filter(e => e.type === 'video')[i];
 			if (!vid) return message.channel.send('Couldn\'t find a video, at least correctly.');
-			const info = await ytdl.getBasicInfo(`${vid.link}`);
+			const info = await ytdl.getBasicInfo(`${vid.url}`);
 			if (info.videoDetails.isLiveContent == true) {
 				index++;
 				return i++;
@@ -109,7 +125,7 @@ module.exports = {
 					// eslint-disable-next-line no-inner-declarations
 					async function playSong() {
 						if (playingMap.has(`${message.guild.id}`, 'Now Playing') == false) playingMap.set(`${message.guild.id}`, 'Now Playing');
-						const stream = ytdl(`${server.queue[0].url}`, { filter: 'audioonly' });
+            const stream = getStream(message, server);
 						server.dispatcher = message.guild.voice.connection.play(stream);
 						server.dispatcher.on('start', async () => {
 							if (server.errorcount != 0) server.errorcount = 0;

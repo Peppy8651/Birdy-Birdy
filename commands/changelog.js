@@ -8,12 +8,12 @@ module.exports = {
 		const ver = version.trim().split(/ +/);
 		const v = ver.join('_');
 		const changelogurl = `https://api.github.com/repos/Peppy8651/Birdy-Birdy/releases/tags/${v}`;
-		const body = await miniget(changelogurl, { headers: { 'User-Agent': 'a/b' } }).text();
+    let body;
+		body = await miniget(changelogurl, { headers: { 'User-Agent': 'a/b' } }).text();
 		const res = JSON.parse(body);
 		if (!res.body) return message.channel.send('Sorry, couldn\'t fetch the changelog.');
-		const published = JSON.stringify(res.published_at);
-		const pub = published.slice(1);
-		const p = pub.slice(0, 10);
+    const pub = new Date(res.published_at);
+    const pubday = pub.toLocaleString('en-US', { timeZone: 'UTC' });
 		const des = JSON.stringify(res.body);
 		const d = des.slice(1, 2044);
 		const description = des.length > 2045 ? d : res.body;
@@ -30,7 +30,7 @@ module.exports = {
 				{ name: 'Respository', value: '[Repo](https://github.com/Peppy8651/Birdy-Birdy)', inline: true },
 				{ name: 'Version', value: res.tag_name, inline: true },
 				{ name: 'All Releases', value: '[Releases](https://github.com/Peppy8651/Birdy-Birdy/releases)', inline: true },
-				{ name: 'Published At', value: p, inline: true },
+				{ name: 'Published On', value: `${pubday} UTC`, inline: true },
 				{ name: 'Is Prerelease?', value: pre, inline: true },
 			)
 			.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())

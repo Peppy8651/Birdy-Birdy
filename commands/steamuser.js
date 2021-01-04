@@ -1,12 +1,9 @@
 // eslint-disable-next-line no-unused-vars
 const Discord = require('discord.js');
-const SteamAPI = require('steamapi');
-const steam = new SteamAPI('A43080429EAC92D1B2A7394AE2AE0EFD');
-
 module.exports = {
 	name: 'steamuser',
 	description: 'steam command lololol',
-	async execute(message) {
+	async execute(message, steam) {
 		const command = ('>steamuser ');
 		const args = message.content.slice(command.length).trim().split(/ -/);
 		const query = args.join(' ');
