@@ -36,7 +36,7 @@ module.exports = {
 			if (!res) return;
 			const vid = res.items.filter(i => i.type === 'video')[0];
 			if (!vid) return message.channel.send('Couldn\'t find a video, at least correctly.');
-			video = vid.link;
+			video = vid.url;
 			loadingmsg.delete().catch(() => console.log('Had a problem deleting this message.'));
 		}
 		let info = await ytdl.getBasicInfo(video);
