@@ -36,7 +36,7 @@ module.exports = {
 		for (var i = 0; i < index; i++) {
 			const vid = res.items.filter(e => e.type === 'video')[i];
 			if (!vid) return message.channel.send('Couldn\'t find a video, at least correctly.');
-			const info = await ytdl.getBasicInfo(`${vid.link}`);
+			const info = await ytdl.getBasicInfo(`${vid.url}`);
 			if (info.videoDetails.isLiveContent == true) {
 				index++;
 				return i++;
