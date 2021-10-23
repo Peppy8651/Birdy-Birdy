@@ -5,7 +5,6 @@ module.exports = {
 	name: 'info',
 	description: 'info command',
 	async execute(message) {
-	  if (e === true) return message.channel.send('Command is disabled for now, will fix later.');
 		const member = message.mentions.members.first();
 		if (message.content.toLowerCase().startsWith('>info' + ' server')) {
 		  const createdAt = message.guild.createdAt.toLocaleString('en-US', { timeZone: 'UTC' });
@@ -46,9 +45,10 @@ Voice: ${message.guild.channels.cache.filter(c => c.type === 'voice').size}` },
 					)
 					.setTimestamp()
 					.setFooter(`Command used by ${message.author.tag}`);
-				message.channel.send(embed);
+				return message.channel.send(embed);
 			}
-			else if (message.content.toLowerCase().includes(`${member}`)) {
+       if (e === true) return message.channel.send('Command is disabled for now, will fix one day.');
+			if (message.content.toLowerCase().startsWith('>info' + ` ${member}`)) {
 				let activity;
 				if (member.presence.activities.filter(a => a.type == 'PLAYING')) activity = `Playing ${member.presence.activities}`;
 				if (member.presence.activities.filter(a => a.type == 'LISTENING')) activity = `Listening to ${member.presence.activities}`;
@@ -74,6 +74,7 @@ ${activity}`;
 				message.channel.send(embed);
 			}
 			else if (message.content == '>info') {
+         if (e === true) return message.channel.send('Command is disabled for now, will fix one day.');
 				let activity;
 				if (message.member.presence.activities.filter(a => a.type == 'PLAYING')) activity = `Playing ${message.member.presence.activities}`;
 				if (message.member.presence.activities.filter(a => a.type == 'LISTENING')) activity = `Listening to ${message.member.presence.activities}`;

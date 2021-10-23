@@ -1,0 +1,4 @@
+Error [TOKEN_INVALID]: An invalid token was provided.Error [TOKEN_INVALID]: An invalid token was provided.
+    at WebSocketManager.connect (/home/runner/Birdy-Birdy/node_modules/discord.js/src/client/websocket/WebSocketManager.js:133:26)
+    at Client.login (/home/runner/Birdy-Birdy/node_modules/discord.js/src/client/Client.js:223:21)
+    at processTicksAndRejections (internal/process/task_queues.js:97:5)

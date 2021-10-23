@@ -1,0 +1,4 @@
+TypeError: Cannot read property 'title' of nullTypeError: Cannot read property 'title' of null
+    at Object.execute (/home/runner/Birdy-Birdy/commands/lyrics.js:11:29)
+    at runMicrotasks (<anonymous>)
+    at processTicksAndRejections (internal/process/task_queues.js:97:5)

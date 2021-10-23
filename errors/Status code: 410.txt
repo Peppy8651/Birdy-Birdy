@@ -1,0 +1,11 @@
+Error: Status code: 410Error: Status code: 410
+    at ClientRequest.<anonymous> (/home/runner/Birdy-Birdy/node_modules/miniget/dist/index.js:196:27)
+    at Object.onceWrapper (events.js:421:26)
+    at ClientRequest.emit (events.js:314:20)
+    at HTTPParser.parserOnIncomingClient (_http_client.js:601:27)
+    at HTTPParser.parserOnHeadersComplete (_http_common.js:122:17)
+    at TLSSocket.socketOnData (_http_client.js:474:22)
+    at TLSSocket.emit (events.js:314:20)
+    at addChunk (_stream_readable.js:297:12)
+    at readableAddChunk (_stream_readable.js:272:9)
+    at TLSSocket.Readable.push (_stream_readable.js:213:10)

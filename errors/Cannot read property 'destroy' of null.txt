@@ -1,0 +1,11 @@
+TypeError: Cannot read property 'destroy' of nullTypeError: Cannot read property 'destroy' of null
+    at Object.execute (/home/runner/Birdy-Birdy/commands/stop.js:9:45)
+    at Client.<anonymous> (/home/runner/Birdy-Birdy/birdy.js:171:19)
+    at Client.emit (events.js:326:22)
+    at MessageCreateAction.handle (/home/runner/Birdy-Birdy/node_modules/discord.js/src/client/actions/MessageCreate.js:31:14)
+    at Object.module.exports [as MESSAGE_CREATE] (/home/runner/Birdy-Birdy/node_modules/discord.js/src/client/websocket/handlers/MESSAGE_CREATE.js:4:32)
+    at WebSocketManager.handlePacket (/home/runner/Birdy-Birdy/node_modules/discord.js/src/client/websocket/WebSocketManager.js:384:31)
+    at WebSocketShard.onPacket (/home/runner/Birdy-Birdy/node_modules/discord.js/src/client/websocket/WebSocketShard.js:444:22)
+    at WebSocketShard.onMessage (/home/runner/Birdy-Birdy/node_modules/discord.js/src/client/websocket/WebSocketShard.js:301:10)
+    at WebSocket.onMessage (/home/runner/Birdy-Birdy/node_modules/ws/lib/event-target.js:132:16)
+    at WebSocket.emit (events.js:314:20)

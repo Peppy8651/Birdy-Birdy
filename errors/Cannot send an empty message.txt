@@ -1,0 +1,5 @@
+DiscordAPIError: Cannot send an empty messageDiscordAPIError: Cannot send an empty message
+    at RequestHandler.execute (/home/runner/Birdy-Birdy/node_modules/discord.js/src/rest/RequestHandler.js:154:13)
+    at runMicrotasks (<anonymous>)
+    at processTicksAndRejections (internal/process/task_queues.js:97:5)
+    at async RequestHandler.push (/home/runner/Birdy-Birdy/node_modules/discord.js/src/rest/RequestHandler.js:39:14)

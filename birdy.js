@@ -52,6 +52,7 @@ for (const file of commandFiles) {
 	client.commands.set(command.name, command);
 }
 const cooldowns = new Discord.Collection();
+
 client.login(`${token}`);
 client.on('ready', () => {
 	console.log('Ready!');
@@ -61,15 +62,17 @@ client.on('ready', () => {
 	console.log(`${client.user.tag} is in ${client.guilds.cache.size} servers`);
 	client.user.setActivity(BirdyActivity, {
 		type: 'LISTENING',
-		name: BirdyActivity
-	});
+    name: BirdyActivity,
+  });
+});
+
+
+client.on('guildCreate', guild => {
+	console.log(`Was added to ${guild.name}!`);
 });
 const { ClientServer } = require('./server.js');
 const MYGUILD = new ClientServer('615884282040287242', client);
 let servers = [MYGUILD];
-client.on('guildCreate', guild => {
-	console.log(`Was added to ${guild.name}!`);
-});
 
 client.on('message', message => {
 	if (!message.guild) return;
@@ -77,6 +80,29 @@ client.on('message', message => {
 	const server = new ClientServer(message.guild.id, client);
 	servers.push(server);
 });
+function spooky(msg) {
+  if (typeof msg === 'string') {
+    client.guilds.cache.find(g => g.name === 'Bruhchannel Official').channels.cache.find(c => c.name == 'general').send(msg);
+  }
+}
+client.on('message', message => {
+  switch (message.content.toLowerCase()) {
+    case 'you\'re a chicken':
+      message.channel.send('no u');
+      break;
+    case 'youre a chicken':
+      message.channel.send('no u');
+      break;
+    case 'your a chicken':
+      message.channel.send('no u');
+      break;
+    case 'ur a chicken':
+      message.channel.send('no u');
+      break;
+    default:
+      break;
+  }
+})
 
 process.on('unhandledRejection', error => {
 	console.log(`Got an error: ${error.message}. You should go check it out in /home/runner/Birdy-Birdy/errors`);
@@ -259,17 +285,6 @@ client.on('message', message => {
 });
 // eslint-disable-next-line no-unused-vars
 const PEPPY_ID = '490548233601417223';
-client.on('message', async message => {
-	if (!message.guild) return;
-	if (message.author.id === client.user.id) return;
-	if (message.content.toLowerCase() == 'hello there') {
-		// eslint-disable-next-line no-shadow
-		const sentMessage = await message.channel.send('General Kenobi');
-		sentMessage.react('👏');
-		sentMessage.react('🤯');
-		sentMessage.react('👌');
-	}
-});
 
 client.on('voiceStateUpdate', (oldState, newState) => {
 	if (!newState.guild) return;
