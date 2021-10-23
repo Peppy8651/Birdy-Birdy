@@ -1,9 +1,0 @@
-TypeError: Only absolute URLs are supportedTypeError: Only absolute URLs are supported
-    at getNodeRequestOptions (/home/runner/Birdy-Birdy/node_modules/node-fetch/lib/index.js:1305:9)
-    at /home/runner/Birdy-Birdy/node_modules/node-fetch/lib/index.js:1410:19
-    at new Promise (<anonymous>)
-    at fetch (/home/runner/Birdy-Birdy/node_modules/node-fetch/lib/index.js:1407:9)
-    at module.exports.getLyrics (/home/runner/Birdy-Birdy/node_modules/magmalyrics/src/index.js:20:32)
-    at runMicrotasks (<anonymous>)
-    at processTicksAndRejections (internal/process/task_queues.js:97:5)
-    at async Object.execute (/home/runner/Birdy-Birdy/commands/lyrics.js:9:20)

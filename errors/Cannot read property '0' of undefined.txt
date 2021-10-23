@@ -1,3 +1,0 @@
-TypeError: Cannot read property '0' of undefinedTypeError: Cannot read property '0' of undefined
-    at Object.execute (/home/runner/Birdy-Birdy/commands/dictionary.js:9:57)
-    at processTicksAndRejections (internal/process/task_queues.js:97:5)
