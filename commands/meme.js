@@ -128,7 +128,7 @@ async function dankMemeChecker(message) {
 async function fetchMeme(message, subreddit) {
   let results;
   try {
-    results = await nodefetch(`https://BirdyMemeAPI.peppy8651.repl.co/${subreddit}/randomPost.json`).then(response => response.json())
+    results = await nodefetch(`https://BirdyMemeAPI.peppy8651.repl.co/${subreddit}/randomPost.json`).then(response => response.json());
   }
   catch (e) {
     results = undefined;
@@ -160,8 +160,8 @@ async function fetchMeme(message, subreddit) {
                     .setURL(`https://www.reddit.com${results.data.permalink}`)
                     .setImage(image)
                     .setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
-                    embed.setTimestamp();
-                message.channel.send(embed).catch(() => {
+                embed.setTimestamp();
+                message.channel.send({ embeds: [embed] }).catch(() => {
                     fetchMeme(message, subreddit);
                     return;
                 });

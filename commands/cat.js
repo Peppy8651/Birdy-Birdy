@@ -20,7 +20,7 @@ module.exports = {
 				.setImage(`${file}`)
 				.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
 				.setTimestamp();
-			message.channel.send(embed);
+			message.channel.send({ embeds: [embed] });
 		}
 	},
 };

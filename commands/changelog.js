@@ -8,12 +8,13 @@ module.exports = {
 		const ver = version.trim().split(/ +/);
 		const v = ver.join('_');
 		const changelogurl = `https://api.github.com/repos/Peppy8651/Birdy-Birdy/releases/tags/${v}`;
-    let body;
+		let body;
+		// eslint-disable-next-line prefer-const
 		body = await miniget(changelogurl, { headers: { 'User-Agent': 'a/b' } }).text();
 		const res = JSON.parse(body);
 		if (!res.body) return message.channel.send('Sorry, couldn\'t fetch the changelog.');
-    const pub = new Date(res.published_at);
-    const pubday = pub.toLocaleString('en-US', { timeZone: 'UTC' });
+		const pub = new Date(res.published_at);
+		const pubday = pub.toLocaleString('en-US', { timeZone: 'UTC' });
 		const des = JSON.stringify(res.body);
 		const d = des.slice(1, 2044);
 		const description = des.length > 2045 ? d : res.body;
@@ -35,6 +36,6 @@ module.exports = {
 			)
 			.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
 			.setTimestamp();
-		message.channel.send(embed);
+		message.channel.send({ embeds: [embed] });
 	},
 };

@@ -13,10 +13,10 @@ module.exports = {
 				{ name: 'Fun Commands', value: 'bonk, cat, cursed, dog, greg, giveaway, meme, singlememe, picmeme, rr, sprite, 1-10, turkeyfight, trickortreat, 8ball' },
 				{ name: 'Info Commands', value: 'about, changelog, help, steamgame, steamuser, urban' },
 				{ name: 'Miscellaneous Commands', value: 'delete, fortune, function, kick, log, ping, suggest, timer, reload' },
-				{ name: 'Music Commands', value: 'add, clear, cut, disconnect, loop, np, play, stop, pause, queue, skip' },
+				{ name: 'Music Commands', value: 'add, clear, cut, disconnect, loop, np, play, stop, pause, queue, skip, search, resume, forcedisconnect' },
 			)
 			.setFooter(`Command used by ${ message.author.tag }`, message.author.displayAvatarURL())
 			.setTimestamp();
-		message.channel.send(embed);
+		message.channel.send({ embeds: [embed] });
 	},
 };

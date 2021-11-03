@@ -15,10 +15,10 @@ module.exports = {
 ${server.turkeyfight.playersconstant[1].player}`, inline: true },
 				{ name: 'Health Stats', value: `${server.turkeyfight.players[0].player}: ${server.turkeyfight.players[0].health}
 ${server.turkeyfight.players[1].player}: ${server.turkeyfight.players[1].health}`, inline: true },
-				{ name: 'Current Turn', value: server.turkeyfight.turn, inline: true },
+				{ name: 'Current Turn', value: `${server.turkeyfight.turn}`, inline: true },
 			)
 			.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
 			.setTimestamp();
-		message.channel.send(embed);
+		message.channel.send({ embeds: [embed] });
 	},
 };

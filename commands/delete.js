@@ -1,11 +1,11 @@
 module.exports = {
 	name: 'delete',
 	command: 'delete command',
-  cooldown: 5,
+	cooldown: 5,
 	authorcheck: true,
 	async execute(message) {
-		if (!message.guild.me.hasPermission('MANAGE_MESSAGES')) return message.channel.send('Sorry, I don\'t have the permissions to use this. Check my role and see if it has the permission MANAGE_MESSAGES enabled.');
-		if (!message.member.hasPermission('MANAGE_MESSAGES')) return message.channel.send('Oh you wanna be sneaky, huh? Violating your permissions by using a Discord bot? Nice try, Mister!');
+		if (!message.guild.me.permissions.has('MANAGE_MESSAGES')) return message.channel.send('Sorry, I don\'t have the permissions to use this. Check my role and see if it has the permission MANAGE_MESSAGES enabled.');
+		if (!message.member.permissions.has('MANAGE_MESSAGES')) return message.channel.send('Oh you wanna be sneaky, huh? Violating your permissions by using a Discord bot? Nice try, Mister!');
 		const command = '>delete ';
 		const args = message.content.slice(command.length).trim().split(/ -/);
 		const amount = (parseInt(args[0]));
@@ -21,7 +21,7 @@ module.exports = {
 				msg.delete().catch(() => console.log('Sorry, couldn\'t delete message'));
 			}, 2500);
 		}).catch(err => {
-      if (err.message == 'You can only bulk delete messages that are under 14 days old.') return message.channel.send('Sorry, but I cannot delete messages that are over 14 days old.');
+			if (err.message == 'You can only bulk delete messages that are under 14 days old.') return message.channel.send('Sorry, but I cannot delete messages that are over 14 days old.');
 			message.channel.send(`There was an error trying to delete messages in this channel! Error: ${err.message}`);
 		});
 	},

@@ -32,6 +32,6 @@ module.exports = {
 		embed.setImage(image);
 		embed.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
 		if (content.data.children[countnum].data.selftext != undefined) embed.setDescription(content.data.children[countnum].data.selftext);
-		message.channel.send(embed).catch(async () => message.channel.send('Sorry, but I had a problem sending your embed.'));
+		message.channel.send({ embeds: [embed] }).catch(async () => message.channel.send('Sorry, but I had a problem sending your embed.'));
 	},
 };

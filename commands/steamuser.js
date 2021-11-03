@@ -23,7 +23,7 @@ module.exports = {
 								{ name: 'Level', value: level, inline: true },
 							)
 							.setThumbnail(summary.avatar.large);
-						message.channel.send(embed);
+						message.channel.send({ embeds: [embed] });
 					}
 					else if (summary.personaState === 0) {
 						const embed = new Discord.MessageEmbed()
@@ -38,7 +38,7 @@ module.exports = {
 							.setThumbnail(summary.avatar.large)
 							.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
 							.setTimestamp();
-						message.channel.send(embed);
+						message.channel.send({ embeds: [embed] });
 					}
 					else {
 						const embed = new Discord.MessageEmbed()
@@ -50,7 +50,7 @@ module.exports = {
 								{ name: 'Level', value: level, inline: true },
 							)
 							.setThumbnail(summary.avatar.large);
-						message.channel.send(embed);
+						message.channel.send({ embeds: [embed] });
 					}
 				});
 			});

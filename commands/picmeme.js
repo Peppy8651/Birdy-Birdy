@@ -26,7 +26,7 @@ module.exports = {
 				.setColor(0xFFFF00)
 				.setTimestamp()
 				.setImage(img);
-			const msg = await message.channel.send(embed);
+			const msg = await message.channel.send({ embeds: [embed] });
 			msg.react('⬆️');
 			msg.react('⬇️');
 			message.delete();

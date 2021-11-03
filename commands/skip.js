@@ -14,13 +14,13 @@ module.exports = {
 		if (!args[0]) {
 			if (server.loopvalue == true) {
 				server.queue.shift();
-				message.guild.voice.connection.dispatcher.end();
+				server.player.stop();
 				server.loopcount = 0;
 				console.log(server.loopcount);
 				message.channel.send('⏩ Skipped! ⏩');
 			}
 			else {
-				message.guild.voice.connection.dispatcher.end();
+				server.player.stop();
 				message.channel.send('⏩ Skipped! ⏩');
 			}
 		}
@@ -31,24 +31,24 @@ module.exports = {
 			if (amount < 1) {
 				if (server.loopvalue == true) {
 					server.queue.shift();
-					message.guild.voice.connection.dispatcher.end();
+					server.player.stop();
 					server.loopcount = 0;
 					message.channel.send('⏩ Skipped! ⏩');
 				}
 				else {
-					message.guild.voice.connection.dispatcher.end();
+					server.player.stop();
 					message.channel.send('⏩ Skipped! ⏩');
 				}
 			}
 			if (server.queue[1] == undefined) {
 				if (server.loopvalue == true) {
 					server.queue.shift();
-					message.guild.voice.connection.dispatcher.end();
+					server.player.stop();
 					server.loopcount = 0;
 					message.channel.send('⏩ Skipped! ⏩');
 				}
 				else {
-					message.guild.voice.connection.dispatcher.end();
+					server.player.stop();
 					message.channel.send('⏩ Skipped! ⏩');
 				}
 			}
@@ -56,12 +56,12 @@ module.exports = {
 			if (server.loopvalue == true) {
 				server.queue.shift();
 				server.queue.splice(1, amount);
-				message.guild.voice.connection.dispatcher.end();
+				server.player.stop();
 				server.loopcount = 0;
 				message.channel.send('⏩ Skipped! ⏩');
 			}
 			else if (server.loopqueue == true) {
-				message.guild.voice.connection.dispatcher.end();
+				server.player.stop();
 				const p = server.queue.splice(0, amount);
 				for (let i = 0; i < p.length; i++) {
 					server.queue.push(p[i]);
@@ -70,7 +70,7 @@ module.exports = {
 			}
 			else {
 				server.queue.splice(1, amount);
-				message.guild.voice.connection.dispatcher.end();
+				server.player.stop();
 				message.channel.send('⏩ Skipped! ⏩');
 			}
 		}

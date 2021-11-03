@@ -17,48 +17,45 @@ module.exports = {
 			// Taken from https://media.hearthpwn.com/attachments/96/923/tadapopper.png
 		const attach = new Discord.MessageAttachment('https://media.hearthpwn.com/attachments/96/923/tadapopper.png', 'tada.png');
 		embed.setThumbnail(attach.attachment);
-		const users = [`${message.author.id}`];
-		const filter = response => {
-			return users.some(a => a.toLowerCase() == response.author.id);
-		};
-		message.channel.send(embed).then(() => {
-			message.channel.awaitMessages(filter, { max: 1, time: 20000, errors: ['time'] })
+		const filter = response => response.author.id == message.author.id;
+		message.channel.send({ embeds: [embed] }).then(() => {
+			message.channel.awaitMessages({ filter, max: 1, time: 20000, errors: ['time'] })
 				.then(collected => {
 					if (collected.first().content.toLowerCase() == 'cancel') return message.channel.send('Okay, cancelling giveaway creation process.');
 					const channel = collected.first().mentions.channels.first() || message.guild.channels.cache.find(c => c.name == `${collected.first().content.toLowerCase()}`) || message.guild.channels.cache.get(collected.first().content.toLowerCase());
 					if (!channel || channel.type == 'dm') return message.channel.send('This isn\'t a channel... I will have to cancel the giveaway creation process. Next time remember that you have to ping a channel, put the channel name in your content, or add the channel ID in your content.');
 					embed.setDescription('Now that you have added a channel, add what the prize is below this message.');
-					embed.addField('Channel', channel, true);
-					message.channel.send(embed).then(() => {
-						message.channel.awaitMessages(filter, { max: 1, time: 20000, errors: ['time'] })
+					embed.addField('Channel', `#${channel.name}`, true);
+					message.channel.send({ embeds: [embed] }).then(() => {
+						message.channel.awaitMessages({ filter, max: 1, time: 20000, errors: ['time'] })
 							.then(collecte => {
 								if (collecte.first().content.toLowerCase() == 'cancel') return message.channel.send('Okay, cancelling giveaway creation process.');
 								const prize = collecte.first().content;
 								embed.setDescription('You have added a prize, so now let\'s start getting complicated. First of all, choose the type of time you want to use. Options are minutes and seconds.');
 								embed.addField('Prize', prize, true);
 								const answers = ['seconds', 'minutes', 'cancel'];
-								const newfilter = response => {
-									return answers.some(n => n.toLowerCase() == response.content.toLowerCase()) && users.some(a => a.toLowerCase() == response.author.id);
-								};
-								message.channel.send(embed).then(() => {
-									message.channel.awaitMessages(newfilter, { max: 1, time: 20000, errors: ['time'] })
+								const newfilter = res => answers.some(res.content.toLowerCase()) && res.member.user.id === message.member.user.id;
+								message.channel.send({ embeds: [embed] }).then(() => {
+									message.channel.awaitMessages({ newfilter, max: 1, time: 20000, errors: ['time'] })
 										.then(collect => {
 											if (collect.first().content.toLowerCase() == 'cancel') return message.channel.send('Okay, cancelling giveaway creation process.');
 											const timetype = collect.first().content.toLowerCase();
+											if (timetype != 'seconds' && timetype != 'minutes' && timetype != 'cancel') return message.channel.send('Cancelling giveaway process because I\'m petty and you did not choose a valid answer.');
 											embed.setDescription(`Good. Now that you have chosen your time type as ${timetype}, we can choose how much time you want. The maximum time for minutes and seconds is 60.`);
-											message.channel.send(embed).then(() => {
+											message.channel.send({ embeds: [embed] }).then(() => {
 												let ans = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', 'cancel'];
 												const newerfilter = response => {
-													return ans.some(n => n.toLowerCase() == response.content.toLowerCase()) && users.some(a => a.toLowerCase() == response.author.id);
+													return ans.some(n => n.toLowerCase() == response.content.toLowerCase()) && response.member.user.id == message.member.user.id;
 												};
-												message.channel.awaitMessages(newerfilter, { max: 1, time: 20000, errors: ['time'] })
+												message.channel.awaitMessages({ newerfilter, max: 1, time: 20000, errors: ['time'] })
 													.then(collec => {
 														if (collec.first().content.toLowerCase() == 'cancel') return message.channel.send('Okay, cancelling giveaway creation process.');
 														const timenum = collec.first().content.toLowerCase();
+														if (isNaN(parseInt(timenum)) || parseInt(timenum) > 60 || parseInt(timenum) < 1) return message.channel.send('Cancelling giveaway process because I\'m petty and you did not choose a valid answer.');
 														embed.setDescription('Now that you have set your time, we can begin the giveaway. For now, let me remind you that if the bot goes down, your giveaway will stop.');
 														const tt = timetype == 'minutes' ? 'minute(s)' : 'second(s)';
 														embed.addField('Time', `${timenum} ${tt}`, true);
-														message.channel.send(embed);
+														message.channel.send({ embeds: [embed] });
 														let time = parseInt(timenum);
 														let t;
 														if (timetype == 'seconds') {
@@ -89,7 +86,7 @@ module.exports = {
 															);
 															em.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
 															em.setTimestamp();
-															const msg = await channel.send(em);
+															const msg = await channel.send({ embeds: [em] });
 															msg.react('🎉');
 															const giveaway = {
 																author: message.author,
@@ -126,15 +123,15 @@ module.exports = {
 																	emb.setThumbnail(attach.attachment);
 																	const hyperlink = `[Click here](https://discord.com/channels/${server.giveaways[index].channel.guild.id}/${server.giveaways[index].channel.id}/${server.giveaways[index].msgID})`;
 																	emb.addFields(
-																		{ name: 'Participants', value: server.giveaways[index].users.length, inline: true },
+																		{ name: 'Participants', value: `${server.giveaways[index].users.length}`, inline: true },
 																		{ name: 'Prize', value: server.giveaways[index].prize, inline: true },
 																		{ name: 'Giveaway Message', value: `${hyperlink}`, inline: true },
 																	);
-																	channel.send(emb);
+																	channel.send({ embeds: [emb] });
 																	for (var e = 0; e < server.giveaways[index].users.length; e++) {
 																		const memberid = server.giveaways[index].users[e];
 																		const member = message.guild.members.cache.get(memberid);
-																		member.user.send(emb);
+																		member.user.send({ embeds: [emb] });
 																	}
 																	return server.giveaways.splice(index, 1);
 																}

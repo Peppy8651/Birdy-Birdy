@@ -22,7 +22,7 @@ module.exports = {
                     .setURL(`https://www.reddit.com${response.data.children[postnum].data.permalink}`)
                     .setImage(response.data.children[postnum].data.url_overridden_by_dest)
                     .setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
-                message.channel.send(embed);
+                message.channel.send({ embeds: [embed] });
             if (x === 15) {
                 message.channel.send(`**TIP**
 Wanna know why there's a cooldown? Well, this cooldown ensures that every cursed image command you use works unless it's on cooldown. Without the cooldown, there would probably be some times where the command wouldn't work and I would get an error! Either way, the cooldown shouldn't take too long since it's only 5 seconds and loading the cursed image and reading it would take more.`);

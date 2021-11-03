@@ -2,6 +2,7 @@
 /* eslint-disable no-var */
 /* eslint-disable indent */
 const Discord = require('discord.js');
+const voice = require('@discordjs/voice');
 const ytdl = require('ytdl-core');
 const ytsr = require('ytsr');
 function secondsToHms(d) {
@@ -18,7 +19,7 @@ function secondsToHms(d) {
 function getStream(message, server) {
   let stream;
   try {
-    stream = ytdl(`${server.queue[0].url}`, { filter: 'audioonly', dlChunkSize: 0 });
+    stream = ytdl(`${server.queue[0].url}`, { filter: 'audioonly' });
   }
   catch(err) {
       message.channel.send(`Unable to play song. Error: ${err.message}`);
@@ -87,7 +88,11 @@ module.exports = {
 			}
 			else {
 				// eslint-disable-next-line no-unused-vars
-				const connection = await message.member.voice.channel.join();
+				const connection = voice.joinVoiceChannel({
+					channelId: message.member.voice.channel.id,
+					guildId: message.guild.id,
+					adapterCreator: message.channel.guild.voiceAdapterCreator,
+				});
 				if (server.queue[0]) server.queue.splice(0, server.queue.length);
 				server.queue.push(song);
 				playSong();
@@ -95,10 +100,29 @@ module.exports = {
 			// eslint-disable-next-line no-inner-declarations
 			async function playSong() {
 				if (playingMap.has(`${message.guild.id}`, 'Now Playing') == false) playingMap.set(`${message.guild.id}`, 'Now Playing');
-        const stream = getStream(message, server);
-				server.dispatcher = message.guild.voice.connection.play(stream);
-        let msg;
-				server.dispatcher.on('start', async () => {
+				const stream = getStream(message, server);
+				const crap = await voice.demuxProbe(stream);
+				const resource = voice.createAudioResource(crap.stream, { inlineVolume: false, inputType: crap.type });
+				server.player = voice.createAudioPlayer();
+				const connection = voice.getVoiceConnection(message.guild.id);
+				connection.subscribe(server.player);
+				server.player.play(resource);
+				let msg;
+				server.player.on('error', async () => {
+					server.errorcount++;
+					if (server.errorcount > 3) {
+						message.channel.send('I could not play your music so I give up and will play the next song.');
+						server.queue.shift();
+						playSong();
+						msg = null;
+					}
+					else {
+						message.channel.send('There was an error while playing your music. I will now attempt to replay your song.');
+						playSong();
+						msg = null;
+					}
+				});
+				server.player.on(voice.AudioPlayerStatus.Playing, async () => {
 					if (server.errorcount != 0) server.errorcount = 0;
 					const embed = new Discord.MessageEmbed()
 						.setAuthor(`${server.queue[0].author} on Youtube`)
@@ -114,12 +138,12 @@ module.exports = {
 							{ name: 'Upload Date', value: server.queue[0].uploadDate, inline: true },
 						);
 					}
-					msg = await message.channel.send(embed);
+					msg = await message.channel.send({ embeds: [embed] });
 					console.log(`Now playing in ${message.guild.name}!`);
-					if (!message.guild.voice.selfDeaf) message.guild.voice.connection.voice.setSelfDeaf(true).then(() => console.log('Birdy deafened'));
+					if (message.guild.me.voice.selfDeaf == false) message.guild.me.voice.setDeaf(true).then(() => console.log('Birdy deafened'));
 				});
-				server.dispatcher.on('finish', async () => {
-          const save = server.queue[0];
+				server.player.on(voice.AudioPlayerStatus.Idle, async () => {
+					const save = server.queue[0];
 					if (server.loopvalue == false && server.loopqueue == false) server.queue.shift();
 					if (server.loopvalue == false && server.loopqueue == true) server.queue.push(server.queue.shift());
 					switch(server.queue.length) {
@@ -130,30 +154,17 @@ module.exports = {
 						if (server.loopvalue != false) server.loopvalue = false;
 						if (server.loopqueue != false) server.loopqueue = false;
 						if (server.loopcount != 0) server.loopcount = 0;
+						server.paused = false;
 						break;
 					default:
 						if (server.loopvalue == false) server.loopcount = 0;
 						if (server.loopvalue == true) server.loopcount++;
-            if (msg.deleted == false && msg.embeds[0].description == `**[${save.title}](${save.url})**` && msg.id != message.channel.messages.cache.first().id) {
-              msg.delete().catch(() => console.log("Unable to delete song embed."));
-            }
+						if (msg.deleted == false && msg.embeds[0].description == `**[${save.title}](${save.url})**` && msg.id != message.channel.messages.cache.first().id) {
+						msg.delete().catch(() => console.log('Unable to delete song embed.'));
+						}
 						playSong();
-            msg = null;
+						msg = null;
 						break;
-					}
-				});
-				server.dispatcher.on('error', async () => {
-					server.errorcount++;
-					if (server.errorcount > 3) {
-						message.channel.send('I could not play your music so I give up and will play the next song.');
-						server.queue.shift();
-						playSong();
-            msg = null;
-					}
-					else {
-						message.channel.send('There was an error while playing your music. I will now attempt to replay your song.');
-						playSong();
-            msg = null;
 					}
 				});
 			}

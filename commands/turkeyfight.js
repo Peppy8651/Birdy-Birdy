@@ -17,7 +17,7 @@ module.exports = {
 			embed.setImage('https://media1.tenor.com/images/7bceb53c8046319b0016443cb1947a94/tenor.gif?itemid=18667615');
 			embed.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
 			embed.setTimestamp();
-			return message.channel.send(embed);
+			return message.channel.send({ embeds: [embed] });
 		}
 		const newPlayers = [message.author, member.user];
 		const p1 = newPlayers[Math.floor(Math.random() * newPlayers.length)];
@@ -69,9 +69,9 @@ module.exports = {
 				.setColor('PURPLE')
 				.setFooter(`Fight started by ${message.author.tag}`, message.author.displayAvatarURL())
 				.setTimestamp();
-			message.channel.send(embed).then(() => {
+			message.channel.send({ embeds: [embed] }).then(() => {
 				server.turkeyfight.turn = server.turkeyfight.players[0].player;
-				message.channel.awaitMessages(filter, { max: 1, time: 20000, errors: ['time'] })
+				message.channel.awaitMessages({ filter, max: 1, time: 20000, errors: ['time'] })
 					.then(collected => {
 						if (collected.first().content.toLowerCase() == 'concede' || collected.first().content.toLowerCase() == '5' || collected.first().content.toLowerCase() == 'five') {
 							message.channel.send(`Looks like ${server.turkeyfight.players[0].player} conceded. ${server.turkeyfight.players[1].player} wins.`);
@@ -101,7 +101,7 @@ module.exports = {
 						outEmbed.setFooter(`Fight started by ${message.author.tag}`, message.author.displayAvatarURL());
 						outEmbed.setColor('PURPLE');
 						outEmbed.setTimestamp();
-						message.channel.send(outEmbed);
+						message.channel.send({ embeds: [outEmbed] });
 						if (collected.first().content.toLowerCase() != '4' && collected.first().content.toLowerCase() != 'four' && collected.first().content.toLowerCase() != 'taunt') {
 							if (lefthealth < 1) {
 								message.channel.send(`Ok, looks like ${server.turkeyfight.players[1].player} has died. ${server.turkeyfight.players[0].player} wins!`);

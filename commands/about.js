@@ -9,8 +9,8 @@ module.exports = {
 			.setTitle('**About Birdy Birdy**')
 			.setColor(0x00ff00)
 			.setThumbnail(client.user.displayAvatarURL());
-			embed.addFields(
-				{ name: 'Details', value: `**Prefix**: ${globalPrefix}
+		embed.addFields(
+			{ name: 'Details', value: `**Prefix**: ${globalPrefix}
 **Servers**: ${client.guilds.cache.size}
 **Version**: ${version}	
 **Tag**: ${client.user.tag}
@@ -19,7 +19,7 @@ module.exports = {
 **Creator/Owner**: <@${PEPPY_ID}>
 
 Any suggestions or feedback? Message my owner!` });
-    embed.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
-		message.channel.send(embed);
+		embed.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
+		message.channel.send({ embeds: [embed] });
 	},
 };

@@ -4,7 +4,7 @@ module.exports = {
 	name: 'suggest',
 	description: 'suggest command',
 	async execute(message, client) {
-		const Peppy = await client.users.fetch(`${PEPPY_ID}`);
+		const Peppy = `<@${PEPPY_ID}>`;
 		const embed = new Discord.MessageEmbed()
 			.setTitle('Suggesting')
 			.setThumbnail(client.user.displayAvatarURL())
@@ -16,6 +16,6 @@ module.exports = {
 			)
 			.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
 			.setTimestamp();
-		message.channel.send(embed);
+		message.channel.send({ embeds: [embed] });
 	},
 };
