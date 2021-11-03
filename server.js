@@ -6,6 +6,7 @@
  * @param {string} guildID
  * @param {Client} client
  */
+const voice = require('@discordjs/voice');
 class ClientServer {
     constructor(guildID, client) {
         if (!guildID || guildID === undefined) throw new Error('This guild is not defined!');
@@ -29,6 +30,8 @@ class ClientServer {
             turn: null,
         };
         this.giveaways = [];
+        this.player = null;
+        this.paused = false;
     }
     resetToDefault() {
         this.yes = false;
