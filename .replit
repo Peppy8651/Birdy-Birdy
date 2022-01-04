@@ -1,2 +1,2 @@
 language = "nodejs"
-run = "node birdy.js"
+run = "node ."

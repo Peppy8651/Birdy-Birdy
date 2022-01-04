@@ -16,8 +16,8 @@ module.exports = {
 		catch (error) {
 			console.log('Message deletion failure');
 		}
-		const stream = ytdl('https://www.youtube.com/watch?v=dQw4w9WgXcQ', { filter: 'audioonly' });
-		const dispatcher = connection.play(stream);
+		const stream = ytdl('https://www.youtube.com/watch?v=dQw4w9WgXcQ', { filter: 'audioonly', quality: 'highestaudio', dlChunkSize: 0, highWaterMark: 1<<25 });
+		const dispatcher = connection.play(stream, { highWaterMark: 1 });
 		dispatcher.on('start', () => {
 			console.log('Video now being played!');
 			message.channel.send('lol');

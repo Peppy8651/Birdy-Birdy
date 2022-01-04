@@ -17,7 +17,7 @@ function secondsToHms(d) {
 function getStream(message, server) {
   let stream;
   try {
-    stream = ytdl(`${server.queue[0].url}`, { filter: 'audioonly', dlChunkSize: 0 });
+    stream = ytdl(`${server.queue[0].url}`, { filter: 'audioonly', quality: 'highestaudio', dlChunkSize: 0, highWaterMark: 1<<25 });
   }
   catch(err) {
       message.channel.send(`Unable to play song. Error: ${err.message}`);
@@ -126,7 +126,7 @@ module.exports = {
 					async function playSong() {
 						if (playingMap.has(`${message.guild.id}`, 'Now Playing') == false) playingMap.set(`${message.guild.id}`, 'Now Playing');
             const stream = getStream(message, server);
-						server.dispatcher = message.guild.voice.connection.play(stream);
+						server.dispatcher = message.guild.voice.connection.play(stream, { highWaterMark: 1 });
 						server.dispatcher.on('start', async () => {
 							if (server.errorcount != 0) server.errorcount = 0;
 							const embed1 = new Discord.MessageEmbed()

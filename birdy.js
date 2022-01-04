@@ -5,7 +5,6 @@
 /* eslint-disable no-inline-comments */
 /* eslint-disable prefer-const */
 /* eslint-disable no-var */
-const replDB = require('@replit/database'); 
 const http = require('http');
 const server = http.createServer((req, res) => {
 	res.writeHead(200);
@@ -81,9 +80,7 @@ client.on('message', message => {
 	servers.push(server);
 });
 function spooky(msg) {
-  if (typeof msg === 'string') {
-    client.guilds.cache.find(g => g.name === 'Bruhchannel Official').channels.cache.find(c => c.name == 'general').send(msg);
-  }
+  client.guilds.cache.find(g => g.name === 'Bruhchannel Official').channels.cache.find(c => c.name == 'general').send(msg);
 }
 client.on('message', message => {
   switch (message.content.toLowerCase()) {
@@ -102,7 +99,7 @@ client.on('message', message => {
     default:
       break;
   }
-})
+});
 
 process.on('unhandledRejection', error => {
 	console.log(`Got an error: ${error.message}. You should go check it out in /home/runner/Birdy-Birdy/errors`);
@@ -172,6 +169,7 @@ client.on('message', message => {
 			.split(/ +/)[0]
 			.toLowerCase();
 		if (cmd == 'eightball') cmd = '8ball';
+    if (cmd == 'pussy') cmd = 'cat';
 		if (cmd == 'unpause') cmd = 'resume';
 		if (!cmd) return;
 		const command = client.commands.get(`${cmd}`);
@@ -437,15 +435,3 @@ client.on('guildDelete', async guild => {
 	servers.splice(index, 1);
 });
 
-// eslint-disable-next-line no-unused-vars
-let presence = setInterval(() => {
-	const Activity = client.user.presence.activities.find(a => a.type == 'LISTENING');
-	if (!Activity) {
-		const command = client.commands.get('status');
-		const BirdyActivity = command.fetchStatus();
-		client.user.setActivity(BirdyActivity, {
-				type: 'LISTENING',
-				name: BirdyActivity
-    }).then(() => console.log('Reset status'));
-	}
-}, 120000);
