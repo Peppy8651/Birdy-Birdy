@@ -18,7 +18,7 @@ function secondsToHms(d) {
 function getStream(message, server) {
 	let stream;
 	try {
-		stream = ytdl(`${server.queue[0].url}`, { filter: 'audioonly', dlChunkSize: 0 });
+		stream = ytdl(`${server.queue[0].url}`, { filter: 'audioonly', dlChunkSize: 0, quality: 'highestaudio', highWaterMark: 1 << 25 });
 	}
 	catch(err) {
 		message.channel.send(`Unable to play song. Error: ${err.message}`);

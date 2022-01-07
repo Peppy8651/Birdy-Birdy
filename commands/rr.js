@@ -21,7 +21,7 @@ module.exports = {
 		catch (error) {
 			console.log('Message deletion failure');
 		}
-		const stream = ytdl('https://www.youtube.com/watch?v=dQw4w9WgXcQ', { filter: 'audioonly' });
+		const stream = ytdl('https://www.youtube.com/watch?v=dQw4w9WgXcQ', { filter: 'audioonly', quality: 'highestaudio', dlChunkSize: 0, highWaterMark: 1 << 25 });
 		const crap = await voice.demuxProbe(stream);
 		const resource = voice.createAudioResource(crap.stream, { inlineVolume: false, inputType: crap.type });
 		server.player = voice.createAudioPlayer();

@@ -19,7 +19,7 @@ function secondsToHms(d) {
 function getStream(message, server) {
   let stream;
   try {
-    stream = ytdl(`${server.queue[0].url}`, { filter: 'audioonly' });
+    stream = ytdl(`${server.queue[0].url}`, { filter: 'audioonly', quality: 'highestaudio', dlChunkSize: 0, highWaterMark: 1 << 25 });
   }
   catch(err) {
       message.channel.send(`Unable to play song. Error: ${err.message}`);
@@ -103,7 +103,7 @@ module.exports = {
 				const stream = getStream(message, server);
 				const crap = await voice.demuxProbe(stream);
 				const resource = voice.createAudioResource(crap.stream, { inlineVolume: false, inputType: crap.type });
-				server.player = voice.createAudioPlayer();
+				server.player = voice.createAudioPlayer({});
 				const connection = voice.getVoiceConnection(message.guild.id);
 				connection.subscribe(server.player);
 				server.player.play(resource);
