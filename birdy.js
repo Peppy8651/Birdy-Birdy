@@ -8,23 +8,22 @@
 /* eslint-disable no-inline-comments */
 /* eslint-disable prefer-const */
 /* eslint-disable no-var */
-// const http = require('http');
-// const server = http.createServer((req, res) => {
-// 	res.writeHead(200);
-// 	res.end('ok ok ok');
-// });
+const http = require('http');
+const server = http.createServer((req, res) => {
+	res.writeHead(200);
+	res.end('ok ok ok');
+});
 const fs = require('fs');
-// server.listen(3000);
+server.listen(3000);
 const Discord = require('discord.js');
 const SteamAPI = require('steamapi');
 const steam = new SteamAPI(`${process.env.SteamKey}`);
 const { Intents } = require('discord.js');
 const int = [Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS, Intents.FLAGS.GUILD_INVITES, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_PRESENCES, Intents.FLAGS.GUILD_VOICE_STATES];
 const client = new Discord.Client({ intents: int });
-const { version } = require('./config.json');
-const { globalPrefix } = require('./config.json');
-// const token = process.env.TOKEN;
-const { token } = require('./config.json');
+let { version } = require('./package.json');
+const globalPrefix = '>';
+const token = process.env.TOKEN;
 client.setMaxListeners(100);
 client.commands = new Discord.Collection();
 const timers = new Discord.Collection();
