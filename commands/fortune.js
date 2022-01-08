@@ -14,7 +14,7 @@ module.exports = {
 			.addFields(
 				{ name: 'Your Fortune', value: fortune },
 			)
-			.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
+			.setFooter({ text: `Command used by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() })
 			.setTimestamp();
 		message.channel.send({ embeds: [embed] });
 	},

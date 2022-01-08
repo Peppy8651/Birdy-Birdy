@@ -51,7 +51,7 @@ module.exports = {
 			server.player.play(resourc);
 			server.player.on(voice.AudioPlayerStatus.Playing, async () => {
 				const embed = new Discord.MessageEmbed()
-					.setAuthor(`${server.queue[0].author} on Youtube`)
+					.setAuthor({ name: `${server.queue[0].author} on Youtube` })
 					.setTitle('**Now Playing**')
 					.setDescription(`**[${server.queue[0].title}](${server.queue[0].url})**`)
 					.setColor(0xFF0000)
@@ -60,7 +60,7 @@ module.exports = {
 						{ name: 'Duration', value: server.queue[0].duration, inline: true },
 						{ name: 'Upload Date', value: server.queue[0].uploadDate, inline: true },
 					)
-					.setFooter(`Song added by ${server.queue[0].msgauthor.tag}`, server.queue[0].msgauthor.displayAvatarURL())
+					.setFooter({ text: `Song added by ${server.queue[0].msgauthor.tag}`, iconURL: server.queue[0].msgauthor.displayAvatarURL() })
 					.setTimestamp();
 				message.channel.send({ embeds: [embed] });
 				console.log(`Now playing in ${message.guild.name}!`);

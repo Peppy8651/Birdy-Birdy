@@ -12,7 +12,7 @@ module.exports = {
 			.setTitle('New Giveaway')
 			.setColor('BLUE')
 			.setDescription('After this message, add a channel for me to use so then we can start the giveaway creation process. If you want to cancel, you type `cancel` anytime during the giveaway creation process to cancel it.')
-			.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
+			.setFooter({ text: `Command used by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() })
 			.setTimestamp();
 			// Taken from https://media.hearthpwn.com/attachments/96/923/tadapopper.png
 		const attach = new Discord.MessageAttachment('https://media.hearthpwn.com/attachments/96/923/tadapopper.png', 'tada.png');
@@ -84,7 +84,7 @@ module.exports = {
 																{ name: 'Prize', value: prize, inline: true },
 																{ name: 'Time', value: `${timenum} ${tt}`, inline: true },
 															);
-															em.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
+															em.setFooter({ text: `Command used by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() });
 															em.setTimestamp();
 															const msg = await channel.send({ embeds: [em] });
 															msg.react('🎉');
@@ -117,7 +117,7 @@ module.exports = {
 																	const winnerid = server.giveaways[index].users[Math.floor(Math.random() * server.giveaways[index].users.length)];
 																	const winner = message.guild.members.cache.get(winnerid);
 																	emb.setDescription(`${winner} won the giveaway in ${server.giveaways[index].channel.guild.name}! As their prize, they get ${server.giveaways[index].prize}! For everyone else, good luck next time!`);
-																	emb.setFooter(`Giveaway created by ${message.author.tag}`, message.author.displayAvatarURL());
+																	emb.setFooter({ text: `Giveaway created by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() });
 																	emb.setTimestamp();
 																	emb.setColor('BLUE');
 																	emb.setThumbnail(attach.attachment);

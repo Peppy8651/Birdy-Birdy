@@ -34,7 +34,7 @@ module.exports = {
 				.setTitle(`Current Queue [${server.queue.length}]`)
 				.setColor(0xFF0000)
 				.setDescription(stringshit)
-				.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
+				.setFooter({ text: `Command used by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() })
 				.setTimestamp();
 			message.channel.send({ embeds: [embed] }).catch(() => message.channel.send('Sorry, couldn\'t send the embed.'));
 			break;

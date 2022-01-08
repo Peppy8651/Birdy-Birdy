@@ -15,7 +15,7 @@ module.exports = {
 			embed.setColor('PURPLE');
 			embed.setDescription(`Leaked footage of ${message.author} turkeyfighting a bot:`);
 			embed.setImage('https://media1.tenor.com/images/7bceb53c8046319b0016443cb1947a94/tenor.gif?itemid=18667615');
-			embed.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
+			embed.setFooter({ text: `Command used by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() });
 			embed.setTimestamp();
 			return message.channel.send({ embeds: [embed] });
 		}
@@ -67,7 +67,7 @@ module.exports = {
 
 5. Concede`)
 				.setColor('PURPLE')
-				.setFooter(`Fight started by ${message.author.tag}`, message.author.displayAvatarURL())
+				.setFooter({ text: `Fight started by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() })
 				.setTimestamp();
 			message.channel.send({ embeds: [embed] }).then(() => {
 				server.turkeyfight.turn = server.turkeyfight.players[0].player;
@@ -98,7 +98,7 @@ module.exports = {
 						outEmbed.setTitle('Turkey Fight');
 						outEmbed.setThumbnail(server.turkeyfight.players[1].player.displayAvatarURL());
 						outEmbed.setDescription(action);
-						outEmbed.setFooter(`Fight started by ${message.author.tag}`, message.author.displayAvatarURL());
+						outEmbed.setFooter({ text: `Fight started by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() });
 						outEmbed.setColor('PURPLE');
 						outEmbed.setTimestamp();
 						message.channel.send({ embeds: [outEmbed] });

@@ -15,7 +15,7 @@ module.exports = {
 				{ name: 'Miscellaneous Commands', value: 'delete, fortune, function, kick, log, ping, suggest, timer, reload' },
 				{ name: 'Music Commands', value: 'add, clear, cut, disconnect, loop, np, play, stop, pause, queue, skip, search, resume, forcedisconnect' },
 			)
-			.setFooter(`Command used by ${ message.author.tag }`, message.author.displayAvatarURL())
+			.setFooter({ text: `Command used by ${ message.author.tag }`, iconURL: message.author.displayAvatarURL() })
 			.setTimestamp();
 		message.channel.send({ embeds: [embed] });
 	},

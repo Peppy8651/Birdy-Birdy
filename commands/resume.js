@@ -8,6 +8,7 @@ module.exports = {
 		if (!server.paused) return message.channel.send('The dispatcher isn\'t paused.');
 		server.player.unpause();
 		server.paused = false;
+    server.resuming = true;
 		message.channel.send('⏯️ Music now resuming... ⏯️');
 	},
 };

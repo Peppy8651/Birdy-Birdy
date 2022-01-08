@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const { globalPrefix } = require('../config.json');
+const globalPrefix = '>';
 const fetch = require('node-fetch');
 module.exports = {
 	name: 'cat',
@@ -18,7 +18,7 @@ module.exports = {
 				.setTitle('**Cat Pic**')
 				.setColor(0xFFC0CB)
 				.setImage(`${file}`)
-				.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
+				.setFooter({ text: `Command used by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() })
 				.setTimestamp();
 			message.channel.send({ embeds: [embed] });
 		}

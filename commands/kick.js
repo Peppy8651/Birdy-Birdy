@@ -39,7 +39,7 @@ module.exports = {
 Here's how it should look:`)
 				.setImage('https://cdn.discordapp.com/attachments/615884282476363776/760904548243341392/Screenshot_2020-09-30_113245yes.png')
 				.setColor(0xFF0000)
-				.setFooter('❌Kick Failure❌')
+				.setFooter({ text: '❌Kick Failure❌' })
 				.setTimestamp();
 			message.channel.send({ embeds: [embed] });
 		}

@@ -3,7 +3,7 @@
 /* eslint-disable indent */
 // eslint-disable-next-line no-unused-vars
 const Discord = require('discord.js');
-const { globalPrefix } = require('../config.json');
+const globalPrefix = '>';
 
 module.exports = {
 	name: '8ball',
@@ -58,18 +58,19 @@ module.exports = {
 		const colors = [[r, g, b], 'RANDOM'];
 		const color = colors[Math.floor(Math.random() * colors.length)];
 		const embed = new Discord.MessageEmbed()
-			.setAuthor(`${authorname}'s 8Ball`, message.author.displayAvatarURL())
+			.setAuthor({ name: `${authorname}'s 8Ball`, iconURL: message.author.displayAvatarURL() })
 			.setColor(color);
 		embed.addFields(
 			{ name: 'Your Request', value: request },
 			{ name: 'My Answer', value: eightball },
 		);
 		embed
-			.setFooter(
-				`Command used by ${message.author.tag}`,
-				message.author.displayAvatarURL(),
-			)
+			.setFooter({ text: `Command used by ${message.author.tag}`, iconURL: 				message.author.displayAvatarURL() })
 			.setTimestamp();
 		message.channel.send({ embeds: [embed] });
 	},
 };
+
+// { name: '', iconURL: '' }
+
+// { text: '', iconURL: '' }

@@ -22,7 +22,7 @@ After that, you will be asked to type a number, which will be the amount of time
 
 ***PLEASE REMEMBER THAT YOUR TIMER MIGHT BE STOPPED IF THE BOT GOES OFFLINE!***`)
 			.setTimestamp()
-			.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
+			.setFooter({ text: `Command used by ${message.author.tag}`, iconURL:  message.author.displayAvatarURL() });
 		message.channel.send({ embeds: [embed] });
 		timers.set(message.author.id, message.guild.id);
 		const timechoose = require('./timer/timetype.json');

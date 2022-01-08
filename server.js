@@ -17,6 +17,7 @@ class ClientServer {
         this.yes = false;
         this.communism = false;
         this.queue = [];
+        this.resuming = false;
         this.loopvalue = false;
         this.loopcount = 0;
         this.errorcount = 0;
@@ -41,6 +42,7 @@ class ClientServer {
         this.loopcount = 0;
         this.errorcount = 0;
         this.loopqueue = false;
+        this.resuming = false;
         this.snipe = [];
         this.editsnipe = [];
         this.turkeyfight = {

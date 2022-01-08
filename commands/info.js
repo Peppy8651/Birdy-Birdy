@@ -24,7 +24,7 @@ Voice: ${message.guild.channels.cache.filter(c => c.type === 'voice').size}` },
 					{ name: 'Region', value: message.guild.region },
 					{ name: 'Guild ID', value: message.guild.id },
 				)
-				.setFooter(`Command used by ${message.author.tag}`)
+				.setFooter({ text: `Command used by ${message.author.tag}`})
 				.setImage(message.guild.bannerURL())
 				.setTimestamp();
 			message.channel.send({ embeds: [embed1] });
@@ -44,7 +44,7 @@ Voice: ${message.guild.channels.cache.filter(c => c.type === 'voice').size}` },
 						{ name: 'Role ID', value: role.id },
 					)
 					.setTimestamp()
-					.setFooter(`Command used by ${message.author.tag}`);
+					.setFooter({ text: `Command used by ${message.author.tag}` });
 				return message.channel.send({ embeds: [embed] });
 			}
 			if (e === true) return message.channel.send('Command is disabled for now, will fix one day.');
@@ -70,7 +70,7 @@ ${activity}`;
 						{ name: 'Presence', value: presence },
 					)
 					.setTimestamp()
-					.setFooter(`Command used by ${message.author.tag}`);
+					.setFooter({ text: `Command used by ${message.author.tag}` });
 				message.channel.send({ embeds: [embed] });
 			}
 			else if (message.content == '>info') {
@@ -96,7 +96,7 @@ ${activity}`;
 						{ name: 'Presence', value: presence },
 					)
 					.setTimestamp()
-					.setFooter(`Command used by ${message.author.tag}`);
+					.setFooter({ text: `Command used by ${message.author.tag}` });
 				message.channel.send({ embeds: [embed] });
 			}
 		}

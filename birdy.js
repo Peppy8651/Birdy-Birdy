@@ -364,10 +364,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
 					serve.giveaways[i].channel.guild.name
 				}! Just telling you that once the giveaway ends, you will be sent a message telling you if you won or not! If you leave the giveaway by removing your reaction, you will not be sent a message and will be removed from the participant list.`,
 			);
-			embed.setFooter(
-				`Giveaway started by ${serve.giveaways[i].author.tag}`,
-				serve.giveaways[i].author.displayAvatarURL(),
-			);
+			embed.setFooter({ text: `Giveaway started by ${serve.giveaways[i].author.tag}`, iconURL: serve.giveaways[i].author.displayAvatarURL() });
 			embed.setTimestamp();
 			embed.setColor('BLUE');
 			// Taken from https://media.hearthpwn.com/attachments/96/923/tadapopper.png
@@ -394,10 +391,7 @@ client.on('messageReactionRemove', async (reaction, user) => {
 				'tada.png',
 			);
 			const embed = new Discord.MessageEmbed();
-			embed.setFooter(
-				`Giveaway started by ${serve.giveaways[i].author.tag}`,
-				serve.giveaways[i].author.displayAvatarURL(),
-			);
+			embed.setFooter({ text: `Giveaway started by ${serve.giveaways[i].author.tag}`, iconURL: serve.giveaways[i].author.displayAvatarURL() });
 			embed.setTimestamp();
 			embed.setDescription(
 				`Since you left the giveaway in ${

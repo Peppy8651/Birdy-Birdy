@@ -44,7 +44,7 @@ module.exports = {
 		}
 		else {
 			const loadingmsg = await message.channel.send(`Searching for \`\`${query}\`\``);
-			const res = await ytsr(query).catch(() => {
+			const res = await ytsr(query, { pages: 2 }).catch(() => {
 				message.channel.send('Sorry, couldn\'t find anything.');
 			});
 			if (!res) return;
@@ -125,11 +125,11 @@ module.exports = {
 				server.player.on(voice.AudioPlayerStatus.Playing, async () => {
 					if (server.errorcount != 0) server.errorcount = 0;
 					const embed = new Discord.MessageEmbed()
-						.setAuthor(`${server.queue[0].author} on Youtube`)
+						.setAuthor({ name: `${server.queue[0].author} on Youtube` })
 						.setTitle('**Now Playing**')
 						.setDescription(`**[${server.queue[0].title}](${server.queue[0].url})**`)
 						.setColor(0xFF0000)
-						.setFooter(`Song added by ${server.queue[0].msgauthor.tag}`, server.queue[0].msgauthor.displayAvatarURL())
+						.setFooter({ text: `Song added by ${server.queue[0].msgauthor.tag}`, iconURL: server.queue[0].msgauthor.displayAvatarURL() })
 						.setTimestamp();
 					if (server.loopcount < 1) embed.setImage(server.queue[0].thumbnail);
 					if (server.loopcount < 1) {
@@ -138,7 +138,9 @@ module.exports = {
 							{ name: 'Upload Date', value: server.queue[0].uploadDate, inline: true },
 						);
 					}
-					msg = await message.channel.send({ embeds: [embed] });
+					if (server.resuming == false) {
+            msg = await message.channel.send({ embeds: [embed] });
+          }
 					console.log(`Now playing in ${message.guild.name}!`);
 					if (message.guild.me.voice.selfDeaf == false) message.guild.me.voice.setDeaf(true).then(() => console.log('Birdy deafened'));
 				});
@@ -148,6 +150,7 @@ module.exports = {
 					if (server.loopvalue == false && server.loopqueue == true) server.queue.push(server.queue.shift());
 					switch(server.queue.length) {
 					case 0:
+            server.resuming = false;
 						playingMap.delete(`${message.guild.id}`, 'Now Playing');
 						message.channel.send('The music is done!');
 						console.log(`Music now finished in ${message.guild.name}`);
@@ -157,11 +160,14 @@ module.exports = {
 						server.paused = false;
 						break;
 					default:
+            server.resuming = false;
 						if (server.loopvalue == false) server.loopcount = 0;
 						if (server.loopvalue == true) server.loopcount++;
-						if (msg.deleted == false && msg.embeds[0].description == `**[${save.title}](${save.url})**` && msg.id != message.channel.messages.cache.first().id) {
-						msg.delete().catch(() => console.log('Unable to delete song embed.'));
-						}
+            if (msg != null) {
+              if (msg.deleted == false && msg.embeds[0].description == `**[${save.title}](${save.url})**` && msg.id != message.channel.messages.cache.first().id) {
+                msg.delete().catch(() => console.log('Unable to delete song embed.'));
+              }
+            }
 						playSong();
 						msg = null;
 						break;

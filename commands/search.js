@@ -98,7 +98,7 @@ module.exports = {
 			.addFields(
 				{ name: 'Choose a video by typing and entering their number or type cancel to cancel your search!', value: stringBullcrap },
 			)
-			.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
+			.setFooter({ text: `Command used by ${message.author.tag}`, iconURL:  message.author.displayAvatarURL() })
 			.setTimestamp();
 		message.channel.send({ embeds: [embed] });
 		const item = ['1', '2', '3', '4', '5', 'cancel'];
@@ -145,11 +145,11 @@ module.exports = {
 						server.player.on(voice.AudioPlayerStatus.Playing, async () => {
 							if (server.errorcount != 0) server.errorcount = 0;
 							const embed1 = new Discord.MessageEmbed()
-								.setAuthor(`${server.queue[0].author} on Youtube`)
+								.setAuthor({ name: `${server.queue[0].author} on Youtube` })
 								.setTitle('**Now Playing**')
 								.setDescription(`**[${server.queue[0].title}](${server.queue[0].url})**`)
 								.setColor(0xFF0000)
-								.setFooter(`Song added by ${server.queue[0].msgauthor.tag}`, server.queue[0].msgauthor.displayAvatarURL())
+								.setFooter({ text: `Song added by ${server.queue[0].msgauthor.tag}`, iconURL: server.queue[0].msgauthor.displayAvatarURL() })
 								.setTimestamp();
 							if (server.loopcount < 1) embed1.setImage(server.queue[0].thumbnail);
 							if (server.loopcount < 1) {

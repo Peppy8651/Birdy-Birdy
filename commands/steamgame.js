@@ -46,8 +46,9 @@ module.exports = {
 				{ name: 'Release Date', value: details.release_date.date, inline: true },
 				{ name: 'Steam App ID', value: `[${details.steam_appid}](https://store.steampowered.com/app/${details.steam_appid})`, inline: true },
 			)
-			.setAuthor('Steam')
-			.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL()).setTimestamp();
+			.setAuthor({ name: 'Steam' })
+			.setFooter({ text: `Command used by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() })
+      .setTimestamp();
 		message.channel.send({ embeds: [embed] });
 	},
 };

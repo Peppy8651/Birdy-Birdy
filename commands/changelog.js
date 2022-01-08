@@ -22,7 +22,7 @@ module.exports = {
 		const embed = new MessageEmbed()
 			.setTitle(res.name)
 			.setURL(res.html_url)
-			.setAuthor(res.author.login, res.author.avatar_url)
+			.setAuthor({ name: res.author.login, iconURL: res.author.avatar_url })
 			.setDescription(description)
 			.setColor(0x00FF00)
 			.setThumbnail(client.user.displayAvatarURL())
@@ -34,7 +34,7 @@ module.exports = {
 				{ name: 'Published On', value: `${pubday} UTC`, inline: true },
 				{ name: 'Is Prerelease?', value: pre, inline: true },
 			)
-			.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
+			.setFooter({ text: `Command used by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() })
 			.setTimestamp();
 		message.channel.send({ embeds: [embed] });
 	},

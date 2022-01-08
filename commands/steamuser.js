@@ -14,7 +14,7 @@ module.exports = {
 				steam.getUserLevel(id).then(level => {
 					if (summary.personaState == 1) {
 						const embed = new Discord.MessageEmbed()
-							.setAuthor('Steam')
+							.setAuthor({ name: 'Steam' })
 							.setTitle(summary.nickname)
 							.setColor(0x2a475e)
 							.addFields(
@@ -27,7 +27,7 @@ module.exports = {
 					}
 					else if (summary.personaState === 0) {
 						const embed = new Discord.MessageEmbed()
-							.setAuthor('Steam')
+							.setAuthor({ name: 'Steam' })
 							.setTitle(summary.nickname)
 							.setColor(0x2a475e)
 							.addFields(
@@ -36,13 +36,13 @@ module.exports = {
 								{ name: 'Level', value: level, inline: true },
 							)
 							.setThumbnail(summary.avatar.large)
-							.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
+							.setFooter({ text: `Command used by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() })
 							.setTimestamp();
 						message.channel.send({ embeds: [embed] });
 					}
 					else {
 						const embed = new Discord.MessageEmbed()
-							.setAuthor('Steam')
+							.setAuthor({ name: 'Steam' })
 							.setTitle(summary.nickname)
 							.setColor(0x2a475e)
 							.addFields(

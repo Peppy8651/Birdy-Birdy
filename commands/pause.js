@@ -8,11 +8,13 @@ module.exports = {
 		if (server.paused) {
 			server.player.unpause();
 			server.paused = false;
+      server.resuming = true;
 			message.channel.send('⏯️ Music now resuming... ⏯️');
 		}
 		else if (!server.paused) {
 			server.player.pause();
 			server.paused = true;
+      server.resuming = false;
 			message.channel.send('⏸️ Music now paused ⏸️');
 		}
 	},

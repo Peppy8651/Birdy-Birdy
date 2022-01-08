@@ -16,12 +16,12 @@ module.exports = {
             var x = Math.floor(Math.random() * 30);
             const response = JSON.parse(res);
                 const embed = new Discord.MessageEmbed()
-                    .setAuthor(`${response.data.children[postnum].data.subreddit_name_prefixed} • Posted by u/${response.data.children[postnum].data.author}`)
+                    .setAuthor({ name: `${response.data.children[postnum].data.subreddit_name_prefixed} • Posted by u/${response.data.children[postnum].data.author}` })
                     .setColor(0xFF4500)
                     .setTitle(`**${response.data.children[postnum].data.title}**`)
                     .setURL(`https://www.reddit.com${response.data.children[postnum].data.permalink}`)
                     .setImage(response.data.children[postnum].data.url_overridden_by_dest)
-                    .setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
+                    .setFooter({ text: `Command used by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() });
                 message.channel.send({ embeds: [embed] });
             if (x === 15) {
                 message.channel.send(`**TIP**

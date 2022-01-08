@@ -21,7 +21,7 @@ module.exports = {
 		embed.setColor(0x00FF00);
 		embed.setThumbnail(client.user.displayAvatarURL());
 		embed.setDescription(cmd.description);
-		embed.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
+		embed.setFooter({ text: `Command used by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() });
 		embed.setTimestamp();
 		if (cmd.usage1 && !cmd.usage2) embed.addField('Usage', cmd.usage1);
 		if (cmd.usage1 && cmd.usage2) {

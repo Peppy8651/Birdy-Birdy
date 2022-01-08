@@ -5,7 +5,8 @@
   "main": "birdy.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node birdy.js"
+    "buildscript": "nix-shell build.nix",
+    "start": "npm run -s buildscript"
   },
   "keywords": [],
   "author": "Peppy8651",

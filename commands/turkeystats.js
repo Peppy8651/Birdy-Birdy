@@ -17,7 +17,7 @@ ${server.turkeyfight.playersconstant[1].player}`, inline: true },
 ${server.turkeyfight.players[1].player}: ${server.turkeyfight.players[1].health}`, inline: true },
 				{ name: 'Current Turn', value: `${server.turkeyfight.turn}`, inline: true },
 			)
-			.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
+			.setFooter({ text: `Command used by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() })
 			.setTimestamp();
 		message.channel.send({ embeds: [embed] });
 	},
