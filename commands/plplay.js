@@ -70,7 +70,7 @@ module.exports = {
 					)
 					.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
 					.setTimestamp();
-				message.channel.send(embed);
+				message.channel.send({ embeds: [embed] });
 				console.log(`Now playing in ${message.guild.name}!`);
 				if (!message.guild.voice.selfDeaf) connection.voice.setSelfDeaf(true).then(() => console.log('Birdy deafened'));
 			});

@@ -26,12 +26,12 @@ module.exports = {
 		image = content.data.children[countnum].data.url_overridden_by_dest;
 		const embed = new Discord.MessageEmbed();
 		embed.setColor(0xFF4500);
-		embed.setAuthor(`${content.data.children[countnum].data.subreddit_name_prefixed} • Posted by u/${content.data.children[countnum].data.author}`);
+		embed.setAuthor({ name: `${content.data.children[countnum].data.subreddit_name_prefixed} • Posted by u/${content.data.children[countnum].data.author}` });
 		embed.setTitle(content.data.children[countnum].data.title);
 		embed.setURL(`https://www.reddit.com${content.data.children[countnum].data.permalink}`);
 		embed.setImage(image);
-		embed.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
+		embed.setFooter({ text: `Command used by ${message.author.tag}`, iconURL:  message.author.displayAvatarURL() });
 		if (content.data.children[countnum].data.selftext != undefined) embed.setDescription(content.data.children[countnum].data.selftext);
-		message.channel.send(embed).catch(async () => message.channel.send('Sorry, but I had a problem sending your embed.'));
+		message.channel.send({ embeds: [embed] }).catch(async () => message.channel.send('Sorry, but I had a problem sending your embed.'));
 	},
 };

@@ -1,3 +1,4 @@
+/* eslint-disable curly */
 /* eslint-disable indent */
 const { MessageAttachment, MessageEmbed } = require('discord.js');
 const Canvas = require('canvas');
@@ -21,22 +22,18 @@ module.exports = {
 		const background = await Canvas.loadImage('https://BirdyMemeAPI.peppy8651.repl.co/images/bonk.jpg');
 		ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 		const authorpic = await Canvas.loadImage(
-			message.author.displayAvatarURL({ format: 'jpg' })
+			message.author.displayAvatarURL({ format: 'jpg' }),
 		);
 		ctx.drawImage(authorpic, 150, 75, 150, 150);
 		const memberpic = await Canvas.loadImage(
-			member.user.displayAvatarURL({ format: 'jpg' })
+			member.user.displayAvatarURL({ format: 'jpg' }),
 		);
 		ctx.drawImage(memberpic, 450, 250, 150, 150);
+		// eslint-disable-next-line no-unused-vars
 		const attachment = new MessageAttachment(canvas.toBuffer(), 'bonk.jpeg');
     const embed = new MessageEmbed();
-		embed.attachFiles([attachment]);
 		embed.setImage('attachment://bonk.jpeg');
-		if (member.user.id == message.author.id)
-			return message.channel.send(
-				"Holy crap, if you're willing to bonk yourself I have no idea what's going on in your head.",
-				embed
-			);
-		message.channel.send(embed);
-	}
+		if (member.user.id == message.author.id) return message.channel.send({ content: 'Holy crap, if you\'re willing to bonk yourself I have no idea what\'s going on in your head.', embeds: [embed], files: [attachment] });
+		message.channel.send({ embeds: [embed], files: [attachment] });
+	},
 };

@@ -10,9 +10,9 @@ module.exports = {
 		const embed = new Discord.MessageEmbed()
 			.setDescription(`${args[0]}`)
 			.setColor(0xFFFF00)
-			.setFooter(`Meme by ${message.author.tag}`, message.author.displayAvatarURL())
+			.setFooter({ text: `Meme by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() })
 			.setTimestamp();
-		const msg = await message.channel.send(embed);
+		const msg = await message.channel.send({ embeds: [embed] });
 		msg.react('⬆️');
 		msg.react('⬇️');
 		message.delete();

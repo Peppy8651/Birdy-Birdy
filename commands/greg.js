@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 module.exports = {
 	name: 'greg',
 	description: 'greg command',
-  cooldown: 5,
+	cooldown: 5,
 	async execute(message) {
 		const command = '>greg ';
 		const args = message.content.slice(command.length).trim().split(/ -/);
@@ -18,8 +18,7 @@ module.exports = {
 		ctx.drawImage(avatar, 155, 125, 120, 120);
 		const attachment = new Discord.MessageAttachment(canvas.toBuffer(), 'greggyboy.jpeg');
 		const embed = new Discord.MessageEmbed();
-		embed.attachFiles([attachment]);
-		embed.setImage('attachment://greggyboy.jpeg')
-		message.channel.send(embed);
+		embed.setImage('attachment://greggyboy.jpeg');
+		message.channel.send({ embeds: [embed], files: [attachment] });
 	},
 };

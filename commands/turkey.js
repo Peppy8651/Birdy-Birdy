@@ -52,7 +52,7 @@ module.exports = {
 
 5. Concede`)
 				.setColor('PURPLE')
-				.setFooter(`Fight started by ${message.author.tag}`, message.author.displayAvatarURL())
+				.setFooter({ text: `Fight started by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() })
 				.setTimestamp();
 			message.channel.send(embed).then(() => {
 				server.turkeyfight.turn = server.turkeyfight.players[0].player;
@@ -83,7 +83,7 @@ module.exports = {
 						outEmbed.setTitle('Turkey Fight');
 						outEmbed.setThumbnail(server.turkeyfight.players[1].player.displayAvatarURL());
 						outEmbed.setDescription(action);
-						outEmbed.setFooter(`Fight started by ${message.author.tag}`, message.author.displayAvatarURL());
+						outEmbed.setFooter({ text: `Fight started by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() });
 						outEmbed.setColor('PURPLE');
 						outEmbed.setTimestamp();
 						message.channel.send(outEmbed);

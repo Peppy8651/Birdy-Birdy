@@ -20,6 +20,6 @@ module.exports = {
 		embed.setDescription(description);
 		embed.setColor('RANDOM');
 		if (description.length > 2044) return message.channel.send('This object is too big, can\'t send it.');
-		if (description.length < 2045) message.channel.send(embed);
+		if (description.length < 2045) message.channel.send({ embeds: [embed] });
 	},
 };

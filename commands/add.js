@@ -44,11 +44,11 @@ module.exports = {
 		if (!server.queue) return message.channel.send('Looks like there isn\'t a queue. Weird how you got here.');
 		const info = await ytdl.getBasicInfo(`${video}`);
 		let videothumb;
-		if (!info.videoDetails.thumbnail.thumbnails[1]) videothumb = info.videoDetails.thumbnail.thumbnails[0].url;
-		if (!info.videoDetails.thumbnail.thumbnails[2]) videothumb = info.videoDetails.thumbnail.thumbnails[1].url;
-		if (!info.videoDetails.thumbnail.thumbnails[3]) videothumb = info.videoDetails.thumbnail.thumbnails[2].url;
-		if(!info.videoDetails.thumbnail.thumbnails[4]) videothumb = info.videoDetails.thumbnail.thumbnails[3].url;
-		if (info.videoDetails.thumbnail.thumbnails[4]) videothumb = info.videoDetails.thumbnail.thumbnails[4].url;
+		if (!info.videoDetails.thumbnails[1]) videothumb = info.videoDetails.thumbnails[0].url;
+		if (!info.videoDetails.thumbnails[2]) videothumb = info.videoDetails.thumbnails[1].url;
+		if (!info.videoDetails.thumbnails[3]) videothumb = info.videoDetails.thumbnails[2].url;
+		if(!info.videoDetails.thumbnails[4]) videothumb = info.videoDetails.thumbnails[3].url;
+		if (info.videoDetails.thumbnails[4]) videothumb = info.videoDetails.thumbnails[4].url;
 		let song = {
 			msgauthor: message.author,
 			title: info.videoDetails.title,

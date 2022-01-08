@@ -22,8 +22,8 @@ After that, you will be asked to type a number, which will be the amount of time
 
 ***PLEASE REMEMBER THAT YOUR TIMER MIGHT BE STOPPED IF THE BOT GOES OFFLINE!***`)
 			.setTimestamp()
-			.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
-		message.channel.send(embed);
+			.setFooter({ text: `Command used by ${message.author.tag}`, iconURL:  message.author.displayAvatarURL() });
+		message.channel.send({ embeds: [embed] });
 		timers.set(message.author.id, message.guild.id);
 		const timechoose = require('./timer/timetype.json');
 		const timechooseitem = timechoose[Math.floor(Math.random() * timechoose.length)];
@@ -31,7 +31,7 @@ After that, you will be asked to type a number, which will be the amount of time
 		const filter = response => {
 			return timechooseitem.answers.some(answer => answer.toLowerCase() == response.content.toLowerCase()) && users.some(a => a.toLowerCase() == response.author.id);
 		};
-		message.channel.awaitMessages(filter, { max: 1, time: 15000, errors: ['time'] })
+		message.channel.awaitMessages({ filter, max: 1, time: 15000, errors: ['time'] })
 			.then(collected => {
 				if (collected.first().content.toLowerCase() == 'cancel') return message.channel.send('Okay, cancelling timer.') && timers.delete(message.author.id, message.guild.id);
 				if(collected.first().content.toLowerCase() == 'hours') {
@@ -42,7 +42,7 @@ After that, you will be asked to type a number, which will be the amount of time
 					};
 
 					message.channel.send(hoursitem.question).then(() => {
-						message.channel.awaitMessages(hoursfilter, { max: 1, time: 15000, errors: ['time'] })
+						message.channel.awaitMessages({ hoursfilter, max: 1, time: 15000, errors: ['time'] })
 							// eslint-disable-next-line no-shadow
 							.then(collected => {
 								if (collected.first().content.toLowerCase() == 'cancel') return message.channel.send('Okay, cancelling timer.') && timers.delete(message.author.id, message.guild.id);
@@ -72,7 +72,7 @@ After that, you will be asked to type a number, which will be the amount of time
 					};
 
 					message.channel.send(secondsitem.question).then(() => {
-						message.channel.awaitMessages(secondsfilter, { max: 1, time: 15000, errors: ['time'] })
+						message.channel.awaitMessages({ secondsfilter, max: 1, time: 15000, errors: ['time'] })
 						// eslint-disable-next-line no-shadow
 							.then(collected => {
 								if (collected.first().content.toLowerCase() == 'cancel') return message.channel.send('Okay, cancelling timer.') && timers.delete(message.author.id, message.guild.id);
@@ -102,7 +102,7 @@ After that, you will be asked to type a number, which will be the amount of time
 					};
 
 					message.channel.send(minutesitem.question).then(() => {
-						message.channel.awaitMessages(minutesfilter, { max: 1, time: 15000, errors: ['time'] })
+						message.channel.awaitMessages({ minutesfilter, max: 1, time: 15000, errors: ['time'] })
 							// eslint-disable-next-line no-shadow
 							.then(collected => {
 								if (collected.first().content.toLowerCase() == 'cancel') return message.channel.send('Okay, cancelling timer.') && timers.delete(message.author.id, message.guild.id);

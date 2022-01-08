@@ -6,6 +6,7 @@
  * @param {string} guildID
  * @param {Client} client
  */
+const voice = require('@discordjs/voice');
 class ClientServer {
     constructor(guildID, client) {
         if (!guildID || guildID === undefined) throw new Error('This guild is not defined!');
@@ -16,6 +17,7 @@ class ClientServer {
         this.yes = false;
         this.communism = false;
         this.queue = [];
+        this.resuming = false;
         this.loopvalue = false;
         this.loopcount = 0;
         this.errorcount = 0;
@@ -29,6 +31,8 @@ class ClientServer {
             turn: null,
         };
         this.giveaways = [];
+        this.player = null;
+        this.paused = false;
     }
     resetToDefault() {
         this.yes = false;
@@ -38,6 +42,7 @@ class ClientServer {
         this.loopcount = 0;
         this.errorcount = 0;
         this.loopqueue = false;
+        this.resuming = false;
         this.snipe = [];
         this.editsnipe = [];
         this.turkeyfight = {

@@ -1,6 +1,5 @@
 const Discord = require('discord.js');
-const { globalPrefix } = require('../config.json');
-
+const globalPrefix = '>';
 module.exports = {
 	name: 'picmeme',
 	description: 'picmeme commmand',
@@ -21,12 +20,12 @@ module.exports = {
 		}
 		try {
 			const embed = new Discord.MessageEmbed()
-				.setAuthor(`Posted by ${message.author.tag}`)
+				.setAuthor({ name: `Posted by ${message.author.tag}` })
 				.setDescription(args[0])
 				.setColor(0xFFFF00)
 				.setTimestamp()
 				.setImage(img);
-			const msg = await message.channel.send(embed);
+			const msg = await message.channel.send({ embeds: [embed] });
 			msg.react('⬆️');
 			msg.react('⬇️');
 			message.delete();

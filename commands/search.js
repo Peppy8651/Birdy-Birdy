@@ -3,6 +3,7 @@
 const Discord = require('discord.js');
 const ytdl = require('ytdl-core');
 const ytsr = require('ytsr');
+const voice = require('@discordjs/voice');
 function secondsToHms(d) {
 	d = Number(d);
 	var h = Math.floor(d / 3600);
@@ -15,17 +16,17 @@ function secondsToHms(d) {
 }
 
 function getStream(message, server) {
-  let stream;
-  try {
-    stream = ytdl(`${server.queue[0].url}`, { filter: 'audioonly', quality: 'highestaudio', dlChunkSize: 0, highWaterMark: 1<<25 });
-  }
-  catch(err) {
-      message.channel.send(`Unable to play song. Error: ${err.message}`);
-      server.queue.shift();
-      if (server.queue[0]) return getStream(message, server);
-      return;
-  }
-  return stream;
+	let stream;
+	try {
+		stream = ytdl(`${server.queue[0].url}`, { filter: 'audioonly', dlChunkSize: 0, quality: 'highestaudio', highWaterMark: 1 << 25 });
+	}
+	catch(err) {
+		message.channel.send(`Unable to play song. Error: ${err.message}`);
+		server.queue.shift();
+		if (server.queue[0]) return getStream(message, server);
+		return;
+	}
+	return stream;
 }
 
 module.exports = {
@@ -33,9 +34,9 @@ module.exports = {
 	description: 'search command for searching music',
 	async execute(message, servers, playingMap) {
 		if (!message.member.voice.channel) return message.channel.send('You cannot use this command outside of a voice channel.');
-    if (!message.guild.me.hasPermission('CONNECT')) return message.channel.send('I cannot connect to the voice channel!');
-			if (!message.guild.me.hasPermission('SPEAK')) return message.channel.send('I cannot speak in the voice channel!');
-		if (playingMap.has(`${message.guild.id}`, 'Now Playing') == true && message.member.voice.channelID != message.guild.me.voice.channelID) return message.channel.send('There is already someone playing music in this server!');
+		if (!message.guild.me.permissions.has('CONNECT')) return message.channel.send('I cannot connect to the voice channel!');
+		if (!message.guild.me.permissions.has('SPEAK')) return message.channel.send('I cannot speak in the voice channel!');
+		if (playingMap.has(`${message.guild.id}`, 'Now Playing') == true && message.member.voice.channelId != message.guild.me.voice.channelId) return message.channel.send('There is already someone playing music in this server!');
 		const command = '>search ';
 		const args = message.content.slice(command.length).trim().split(/ -/);
 		const query = args.join(' ');
@@ -67,11 +68,11 @@ module.exports = {
 			const vidduration = secondsToHms(info.videoDetails.lengthSeconds);
 			const rnumber = i + 1;
 			let videothumb;
-			if (!info.videoDetails.thumbnail.thumbnails[1]) videothumb = info.videoDetails.thumbnail.thumbnails[0].url;
-			if (!info.videoDetails.thumbnail.thumbnails[2]) videothumb = info.videoDetails.thumbnail.thumbnails[1].url;
-			if (!info.videoDetails.thumbnail.thumbnails[3]) videothumb = info.videoDetails.thumbnail.thumbnails[2].url;
-			if(!info.videoDetails.thumbnail.thumbnails[4]) videothumb = info.videoDetails.thumbnail.thumbnails[3].url;
-			if (info.videoDetails.thumbnail.thumbnails[4]) videothumb = info.videoDetails.thumbnail.thumbnails[4].url;
+			if (!info.videoDetails.thumbnails[1]) videothumb = info.videoDetails.thumbnails[0].url;
+			if (!info.videoDetails.thumbnails[2]) videothumb = info.videoDetails.thumbnails[1].url;
+			if (!info.videoDetails.thumbnails[3]) videothumb = info.videoDetails.thumbnails[2].url;
+			if(!info.videoDetails.thumbnails[4]) videothumb = info.videoDetails.thumbnails[3].url;
+			if (info.videoDetails.thumbnails[4]) videothumb = info.videoDetails.thumbnails[4].url;
 			const author = info.videoDetails.author.name == undefined ? info.videoDetails.ownerChannelName : info.videoDetails.author.name;
 			let song = {
 				msgauthor: message.author,
@@ -86,21 +87,26 @@ module.exports = {
 			URLs.push(song);
 		}
 		loadingmsg.delete();
+		let stringBullcrap = '';
+		for (i = 0; i < URLSinfo.length; i++) {
+			const bullshit = '\n' + URLSinfo[i];
+			stringBullcrap = stringBullcrap + bullshit;
+		}
 		const embed = new Discord.MessageEmbed()
 			.setTitle('**Search Results**')
 			.setColor(0xFF0000)
 			.addFields(
-				{ name: 'Choose a video by typing and entering their number or type cancel to cancel your search!', value: URLSinfo },
+				{ name: 'Choose a video by typing and entering their number or type cancel to cancel your search!', value: stringBullcrap },
 			)
-			.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL())
+			.setFooter({ text: `Command used by ${message.author.tag}`, iconURL:  message.author.displayAvatarURL() })
 			.setTimestamp();
-		message.channel.send(embed);
+		message.channel.send({ embeds: [embed] });
 		const item = ['1', '2', '3', '4', '5', 'cancel'];
 		const users = [message.author.id];
 		const filter = response => {
 			return item.some(answer => answer.toLowerCase() == response.content.toLowerCase()) && users.some(a => a.toLowerCase() == response.author.id);
 		};
-		message.channel.awaitMessages(filter, { max: 1, time: 15000, errors: ['time'] })
+		message.channel.awaitMessages({ filter, max: 1, time: 15000, errors: ['time'] })
 			.then(async collected => {
 				let num;
 				if (collected.first().content.toLowerCase().includes('cancel')) return message.channel.send('Alright, cancelling search process.');
@@ -119,22 +125,31 @@ module.exports = {
 					}
 					else {
 						// eslint-disable-next-line no-unused-vars
-						const connection = await message.member.voice.channel.join();
+						const connection = voice.joinVoiceChannel({
+							channelId: message.member.voice.channel.id,
+							guildId: message.guild.id,
+							adapterCreator: message.channel.guild.voiceAdapterCreator,
+						});
 						playSong();
 					}
 					// eslint-disable-next-line no-inner-declarations
 					async function playSong() {
 						if (playingMap.has(`${message.guild.id}`, 'Now Playing') == false) playingMap.set(`${message.guild.id}`, 'Now Playing');
-            const stream = getStream(message, server);
-						server.dispatcher = message.guild.voice.connection.play(stream, { highWaterMark: 1 });
-						server.dispatcher.on('start', async () => {
+						const stream = getStream(message, server);
+						const crap = await voice.demuxProbe(stream);
+						const resource = voice.createAudioResource(crap.stream, { inlineVolume: false, inputType: crap.type });
+						server.player = voice.createAudioPlayer();
+						const connection = voice.getVoiceConnection(message.guild.id);
+						connection.subscribe(server.player);
+						server.player.play(resource);
+						server.player.on(voice.AudioPlayerStatus.Playing, async () => {
 							if (server.errorcount != 0) server.errorcount = 0;
 							const embed1 = new Discord.MessageEmbed()
-								.setAuthor(`${server.queue[0].author} on Youtube`)
+								.setAuthor({ name: `${server.queue[0].author} on Youtube` })
 								.setTitle('**Now Playing**')
 								.setDescription(`**[${server.queue[0].title}](${server.queue[0].url})**`)
 								.setColor(0xFF0000)
-								.setFooter(`Song added by ${server.queue[0].msgauthor.tag}`, server.queue[0].msgauthor.displayAvatarURL())
+								.setFooter({ text: `Song added by ${server.queue[0].msgauthor.tag}`, iconURL: server.queue[0].msgauthor.displayAvatarURL() })
 								.setTimestamp();
 							if (server.loopcount < 1) embed1.setImage(server.queue[0].thumbnail);
 							if (server.loopcount < 1) {
@@ -143,11 +158,11 @@ module.exports = {
 									{ name: 'Upload Date', value: server.queue[0].uploadDate, inline: true },
 								);
 							}
-							message.channel.send(embed1);
+							message.channel.send({ embeds: [embed1] });
 							console.log(`Now playing in ${message.guild.name}!`);
-							if (!message.guild.voice.selfDeaf) message.guild.voice.connection.voice.setSelfDeaf(true).then(() => console.log('Birdy deafened'));
+							if (!message.guild.me.voice.selfDeaf) message.guild.me.voice.setSelfDeaf(true).then(() => console.log('Birdy deafened'));
 						});
-						server.dispatcher.on('finish', async () => {
+						server.player.on(voice.AudioPlayerStatus.Idle, async () => {
 							if (server.loopvalue == false && server.loopqueue == false) server.queue.shift();
 							if (server.loopvalue == false && server.loopqueue == true) server.queue.push(server.queue.shift());
 							switch(server.queue.length) {
@@ -158,6 +173,7 @@ module.exports = {
 								if (server.loopvalue != false) server.loopvalue = false;
 								if (server.loopqueue != false) server.loopqueue = false;
 								if (server.loopcount != 0) server.loopcount = 0;
+								server.paused = false;
 								break;
 							default:
 								if (server.loopvalue == false) server.loopcount = 0;
@@ -166,7 +182,7 @@ module.exports = {
 								break;
 							}
 						});
-						server.dispatcher.on('error', async () => {
+						server.player.on('error', async () => {
 							server.errorcount++;
 							if (server.errorcount > 3) {
 								message.channel.send('I could not play your music so I give up and will play the next song.');

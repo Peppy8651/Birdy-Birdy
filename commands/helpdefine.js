@@ -7,6 +7,8 @@ module.exports = {
 		if (!args[1]) return message.channel.send('You need a query to get information about this command.');
 		let query = args[1].toLowerCase();
 		if (args[1] == 'eightball') query = '8ball';
+		if (args[1] == 'pussy') query = 'cat';
+		if (args[1] == 'fd') query = 'forcedisconnect';
 		let cmd;
 		try {
 			cmd = require(`./cmdinfo/${query}`);
@@ -19,7 +21,7 @@ module.exports = {
 		embed.setColor(0x00FF00);
 		embed.setThumbnail(client.user.displayAvatarURL());
 		embed.setDescription(cmd.description);
-		embed.setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
+		embed.setFooter({ text: `Command used by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() });
 		embed.setTimestamp();
 		if (cmd.usage1 && !cmd.usage2) embed.addField('Usage', cmd.usage1);
 		if (cmd.usage1 && cmd.usage2) {
@@ -30,6 +32,6 @@ module.exports = {
 		}
 		if (cmd.usage3) embed.addField('Usage (3)', cmd.usage3);
 		if (cmd.usage4) embed.addField('Usage (4)', cmd.usage4);
-		message.channel.send(embed);
+		message.channel.send({ embeds: [embed] });
 	},
 };

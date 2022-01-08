@@ -27,7 +27,7 @@ module.exports = {
 				.addFields(
 					{ name: 'Reason', value: reason })
 				.setTimestamp();
-			message.channel.send(embed);
+			message.channel.send({ embeds: [embed] });
 		}
 		else {
 			const embed = new Discord.MessageEmbed()
@@ -37,9 +37,9 @@ module.exports = {
 Here's how it could look like:`)
 				.setImage('https://cdn.discordapp.com/attachments/615884282476363776/760904548243341392/Screenshot_2020-09-30_113245yes.png')
 				.setColor(0xFF0000)
-				.setFooter('❌Ban Failure❌')
+				.setFooter({ text: '❌Ban Failure❌' })
 				.setTimestamp();
-			message.channel.send(embed);
+			message.channel.send({ embeds: [embed] });
 		}
 	},
 };

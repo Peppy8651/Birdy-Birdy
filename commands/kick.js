@@ -6,13 +6,13 @@ module.exports = {
 	description: 'kickcommand',
 	all: false,
 	execute(message) {
-		if (!message.guild.me.hasPermission('ADMINISTRATOR') && !message.guild.me.hasPermission('KICK_MEMBERS')) return message.channel.send('Sorry, can\'t kick anybody since I don\'t have the permissions to.');
-    if (!message.member.hasPermission('ADMINISTRATOR') && !message.member.hasPermission('KICK_MEMBERS')) return message.channel.send('You don\'t have the permissions to use this command!');
+		if (!message.guild.me.permissions.has('ADMINISTRATOR') && !message.guild.me.permissions.has('KICK_MEMBERS')) return message.channel.send('Sorry, can\'t kick anybody since I don\'t have the permissions to.');
+		if (!message.member.permissions.has('ADMINISTRATOR') && !message.member.permissions.has('KICK_MEMBERS')) return message.channel.send('You don\'t have the permissions to use this command!');
 		const cmd = '>kick ';
 		const findargs = message.content.slice(cmd.length).trim().split(/ +/);
 		const member = message.mentions.members.first() || message.guild.members.cache.get(`${findargs[0]}`) || message.guild.members.cache.find(m => m.user.tag == `${findargs[0]}`);
 		if (!member) return message.channel.send('You need to find a member for this to work, silly! If you\'re using tags, remember that spaces in the tag will make it invalid.');
-		if (member.hasPermission('ADMINISTRATOR')) return message.channel.send('You cannot kick an administrator!');
+		if (member.permissions.has('ADMINISTRATOR')) return message.channel.send('You cannot kick an administrator!');
 		if (member.kickable) {
 			const command = (`>kick ${findargs[0]} `);
 			const args = message.content.slice(command.length).trim().split(/ -/);
@@ -29,7 +29,7 @@ module.exports = {
 					{ name: 'Reason', value: reason },
 				)
 				.setTimestamp();
-			message.channel.send(embed);
+			message.channel.send({ embeds: [embed] });
 		}
 		else {
 			const embed = new Discord.MessageEmbed()
@@ -39,9 +39,9 @@ module.exports = {
 Here's how it should look:`)
 				.setImage('https://cdn.discordapp.com/attachments/615884282476363776/760904548243341392/Screenshot_2020-09-30_113245yes.png')
 				.setColor(0xFF0000)
-				.setFooter('❌Kick Failure❌')
+				.setFooter({ text: '❌Kick Failure❌' })
 				.setTimestamp();
-			message.channel.send(embed);
+			message.channel.send({ embeds: [embed] });
 		}
 	},
 };

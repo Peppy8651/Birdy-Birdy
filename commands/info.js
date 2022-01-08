@@ -7,7 +7,7 @@ module.exports = {
 	async execute(message) {
 		const member = message.mentions.members.first();
 		if (message.content.toLowerCase().startsWith('>info' + ' server')) {
-		  const createdAt = message.guild.createdAt.toLocaleString('en-US', { timeZone: 'UTC' });
+			const createdAt = message.guild.createdAt.toLocaleString('en-US', { timeZone: 'UTC' });
 			const embed1 = new Discord.MessageEmbed()
 				.setTitle(`${message.guild.name}`)
 				.setColor(message.guild.owner.displayHexColor)
@@ -24,10 +24,10 @@ Voice: ${message.guild.channels.cache.filter(c => c.type === 'voice').size}` },
 					{ name: 'Region', value: message.guild.region },
 					{ name: 'Guild ID', value: message.guild.id },
 				)
-				.setFooter(`Command used by ${message.author.tag}`)
+				.setFooter({ text: `Command used by ${message.author.tag}`})
 				.setImage(message.guild.bannerURL())
 				.setTimestamp();
-			message.channel.send(embed1);
+			message.channel.send({ embeds: [embed1] });
 		}
 		else {
 			const role = message.mentions.roles.first();
@@ -44,10 +44,10 @@ Voice: ${message.guild.channels.cache.filter(c => c.type === 'voice').size}` },
 						{ name: 'Role ID', value: role.id },
 					)
 					.setTimestamp()
-					.setFooter(`Command used by ${message.author.tag}`);
-				return message.channel.send(embed);
+					.setFooter({ text: `Command used by ${message.author.tag}` });
+				return message.channel.send({ embeds: [embed] });
 			}
-       if (e === true) return message.channel.send('Command is disabled for now, will fix one day.');
+			if (e === true) return message.channel.send('Command is disabled for now, will fix one day.');
 			if (message.content.toLowerCase().startsWith('>info' + ` ${member}`)) {
 				let activity;
 				if (member.presence.activities.filter(a => a.type == 'PLAYING')) activity = `Playing ${member.presence.activities}`;
@@ -70,11 +70,11 @@ ${activity}`;
 						{ name: 'Presence', value: presence },
 					)
 					.setTimestamp()
-					.setFooter(`Command used by ${message.author.tag}`);
-				message.channel.send(embed);
+					.setFooter({ text: `Command used by ${message.author.tag}` });
+				message.channel.send({ embeds: [embed] });
 			}
 			else if (message.content == '>info') {
-         if (e === true) return message.channel.send('Command is disabled for now, will fix one day.');
+				if (e === true) return message.channel.send('Command is disabled for now, will fix one day.');
 				let activity;
 				if (message.member.presence.activities.filter(a => a.type == 'PLAYING')) activity = `Playing ${message.member.presence.activities}`;
 				if (message.member.presence.activities.filter(a => a.type == 'LISTENING')) activity = `Listening to ${message.member.presence.activities}`;
@@ -96,8 +96,8 @@ ${activity}`;
 						{ name: 'Presence', value: presence },
 					)
 					.setTimestamp()
-					.setFooter(`Command used by ${message.author.tag}`);
-				message.channel.send(embed);
+					.setFooter({ text: `Command used by ${message.author.tag}` });
+				message.channel.send({ embeds: [embed] });
 			}
 		}
 	},

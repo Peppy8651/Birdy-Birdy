@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 module.exports = {
 	name:'urban',
 	description:'urban dictionary command using node-fetch and urban dictionary api',
-  cooldown: 2.5,
+	cooldown: 2.5,
 	async execute(message) {
 		const command = '>urban ';
 		const args = message.content.slice(command.length).trim().split(/ -/);
@@ -17,20 +17,20 @@ module.exports = {
 		try {
 			if (!list[0].example) {
 				const embed = new Discord.MessageEmbed()
-					.setAuthor(list[0].author)
+					.setAuthor({ name: `${list[0].author}` })
 					.setTitle(`${list[0].word}`)
 					.setColor(0xC0C0C0)
 					.setURL(`${list[0].permalink}`)
 					.setDescription(`**Definition**
 ${list[0].definition}`)
-					.setFooter(`👍${list[0].thumbs_up} 👎${list[0].thumbs_down}
-Command used by ${message.author.tag} • Powered by Urban Dictionary`, message.author.displayAvatarURL())
+					.setFooter({ text: `👍${list[0].thumbs_up} 👎${list[0].thumbs_down}
+Command used by ${message.author.tag} • Powered by Urban Dictionary`, iconURL: message.author.displayAvatarURL() })
 					.setTimestamp();
-				message.channel.send(embed);
+				message.channel.send({ embeds: [embed] });
 			}
 			else {
 				const embed = new Discord.MessageEmbed()
-					.setAuthor(list[0].author)
+					.setAuthor({ name: `${list[0].author}` })
 					.setTitle(`${list[0].word}`)
 					.setColor(0xC0C0C0)
 					.setURL(`${list[0].permalink}`)
@@ -39,11 +39,11 @@ ${list[0].definition}
 
 **Example**
 ${list[0].example}`)
-					.setFooter(`👍${list[0].thumbs_up} 👎${list[0].thumbs_down}
-Command used by ${message.author.tag} • Powered by Urban Dictionary`, message.author.displayAvatarURL())
+					.setFooter({ text: `👍${list[0].thumbs_up} 👎${list[0].thumbs_down}
+Command used by ${message.author.tag} • Powered by Urban Dictionary`, iconURL: message.author.displayAvatarURL() })
 					.setTimestamp();
 				if (embed.description.length > 2048) return message.channel.send('This definition or example is way too big!');
-				message.channel.send(embed);
+				message.channel.send({ embeds: [embed] });
 			}
 		}
 		catch (error) {

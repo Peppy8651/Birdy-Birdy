@@ -128,7 +128,7 @@ async function dankMemeChecker(message) {
 async function fetchMeme(message, subreddit) {
   let results;
   try {
-    results = await nodefetch(`https://BirdyMemeAPI.peppy8651.repl.co/${subreddit}/randomPost.json`).then(response => response.json())
+    results = await nodefetch(`https://BirdyMemeAPI.peppy8651.repl.co/${subreddit}/randomPost.json`).then(response => response.json());
   }
   catch (e) {
     results = undefined;
@@ -154,14 +154,14 @@ async function fetchMeme(message, subreddit) {
             if (image.startsWith('https://gfycat.com/')) return fetchMeme(message, subreddit);
             var x = Math.floor(Math.random() * 30);
                 const embed = new Discord.MessageEmbed()
-                    .setAuthor(`${results.data.subreddit_name_prefixed} • Posted by u/${results.data.author}`)
+                    .setAuthor({ name: `${results.data.subreddit_name_prefixed} • Posted by u/${results.data.author}` })
                     .setColor(0xFF4500)
                     .setTitle(`**${results.data.title}**`)
                     .setURL(`https://www.reddit.com${results.data.permalink}`)
                     .setImage(image)
-                    .setFooter(`Command used by ${message.author.tag}`, message.author.displayAvatarURL());
-                    embed.setTimestamp();
-                message.channel.send(embed).catch(() => {
+                    .setFooter({ text: `Command used by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() });
+                embed.setTimestamp();
+                message.channel.send({ embeds: [embed] }).catch(() => {
                     fetchMeme(message, subreddit);
                     return;
                 });
