@@ -16,7 +16,6 @@ module.exports = {
 				server.queue.shift();
 				server.player.stop();
 				server.loopcount = 0;
-				console.log(server.loopcount);
 				message.channel.send('⏩ Skipped! ⏩');
 			}
 			else {

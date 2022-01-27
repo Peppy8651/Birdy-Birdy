@@ -13,8 +13,9 @@ const server = http.createServer((req, res) => {
 	res.writeHead(200);
 	res.end('ok ok ok');
 });
-const fs = require('fs');
 server.listen(3000);
+
+const fs = require('fs');
 const Discord = require('discord.js');
 const SteamAPI = require('steamapi');
 const steam = new SteamAPI(`${process.env.SteamKey}`);
@@ -55,8 +56,7 @@ for (const file of commandFiles) {
 }
 const cooldowns = new Discord.Collection();
 
-client.login(`${token}`);
-client.on('ready', () => {
+client.on('ready', async () => {
 	console.log('Ready!');
 	console.log(`Logged in as ${client.user.tag}`);
 	const command = client.commands.get('status');
@@ -65,9 +65,14 @@ client.on('ready', () => {
 	client.user.setActivity(BirdyActivity, {
 		type: 'LISTENING',
 		name: BirdyActivity,
-    });
+  });
 });
 
+client.login(`${token}`);
+
+client.on('rateLimit', data => {
+  console.log(`Rate Limit \n Timeout: ${data.timeout}ms \n Limit: ${data.limit} \n Method: ${data.method} \n Global: ${data.global}`);
+});
 
 client.on('guildCreate', guild => {
 	console.log(`Was added to ${guild.name}!`);
@@ -88,27 +93,6 @@ function spooky(msg) {
     client.guilds.cache.find(g => g.name === 'Bruhchannel Official').channels.cache.find(c => c.name == 'general').send(msg);
   }
 }
-client.on('messageCreate', message => {
-  switch (message.content.toLowerCase()) {
-    case 'you\'re a chicken':
-      message.channel.send('no u');
-      break;
-    case 'youre a chicken':
-		message.channel.send('no u');
-      break;
-    case 'your a chicken':
-		message.channel.send('no u');
-      break;
-    case 'ur a chicken':
-		message.channel.send('no u');
-      break;
-	case 'you are a chicken':
-		message.channel.send('no u');
-		break;
-    default:
-      break;
-  }
-});
 
 process.on('unhandledRejection', error => {
 	console.log(`Got an error: ${error.message}. You should go check it out in /home/runner/Birdy-Birdy/errors`);
@@ -297,6 +281,9 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 		servie.errorcount = 0;
 		servie.paused = false;
 		servie.player = null;
+    const voice = require('@discordjs/voice');
+    const connection = voice.getVoiceConnection(newState.guild.id);
+    connection.destroy();
 	}
 });
 
@@ -304,51 +291,73 @@ client.on('messageCreate', message => {
 	if (!message.guild) return;
 	if (message.author.id === client.user.id) return;
 	const serv = servers.find(s => s.id == message.guild.id);
-	if (serv.communism === false) return;
-	if (message.content.toLowerCase().includes('my')) {
-		message.channel.send('You mean **OUR**?');
-	} else if (message.content.toLowerCase().includes('mine')) {
-		message.channel.send('You mean **OURS**?');
-	}
+  // commie
+	if (serv.communism === true) {
+    if (message.content.toLowerCase().includes('my')) {
+		  message.channel.send('You mean **OUR**?');
+      return;
+	  } else if (message.content.toLowerCase().includes('mine')) {
+		  message.channel.send('You mean **OURS**?');
+      return;
+	  }
+  }
+  //yesno
+  if (serv.yes === true) {
+    if (message.content.toLowerCase().includes('yes')) {
+		  message.channel.send('no');
+      return;
+	  } else if (message.content.toLowerCase().includes('no')) {
+		  message.channel.send('yes');
+      return;
+	  }
+  }
+  // henry funny joke
+  switch (message.content.toLowerCase()) {
+    case 'you\'re a chicken':
+      message.channel.send('no u');
+      break;
+    case 'youre a chicken':
+		message.channel.send('no u');
+      break;
+    case 'your a chicken':
+		message.channel.send('no u');
+      break;
+    case 'ur a chicken':
+		message.channel.send('no u');
+      break;
+	case 'you are a chicken':
+		message.channel.send('no u');
+		break;
+    default:
+      break;
+  }
 });
 
-client.on('messageCreate', message => {
-	if (!message.guild) return;
-	if (message.author.id === client.user.id) return;
-	const serve = servers.find(s => s.id == message.guild.id);
-	if (serve.yes === false) return;
-	if (message.content.toLowerCase().includes('yes')) {
-		message.channel.send('no');
-	} else if (message.content.toLowerCase().includes('no')) {
-		message.channel.send('yes');
-	}
-});
-
-client.on('messageDelete', message => {
-	if (!message.guild) return;
-	const serve = servers.find(s => s.id == message.guild.id);
-	if (!serve) return;
-	const time = new Date();
-	const timetime = time.toLocaleString('en-US', { timeZone: 'UTC' });
-	if (!message.attachments.first()) img = undefined;
-	if (message.attachments.first()) img = message.attachments.first().proxyURL;
-  const createdAtTime = message.createdAt.toLocaleString('en-US', { timeZone: 'UTC' });
-	const msg = {
-		content: message.content,
-		channel: message.channel,
-		member: message.member,
-		author: message.author,
-		guild: message.guild,
-		time: timetime,
-		image: img,
-    createdAt: createdAtTime,
-	};
-	if (!serve.snipe[0]) serve.snipe.push(msg);
-	if (serve.snipe[0]) {
-		serve.snipe.splice(0, serve.snipe.length);
-		serve.snipe.push(msg);
-	}
-});
+// client.on('messageDelete', message => {
+// 	if (!message.guild) return;
+// 	const serve = servers.find(s => s.id == message.guild.id);
+// 	if (!serve) return;
+// 	const time = new Date();
+// 	const timetime = time.toLocaleString('en-US', { timeZone: 'UTC' });
+// 	if (!message.attachments.first()) img = undefined;
+// 	if (message.attachments.first()) img = message.attachments.first().proxyURL;
+//   const createdAtTime = message.createdAt.toLocaleString('en-US', { timeZone: 'UTC' });
+// 	const msg = {
+// 		content: message.content,
+// 		channel: message.channel,
+// 		member: message.member,
+// 		author: message.author,
+// 		guild: message.guild,
+// 		time: timetime,
+// 		image: img,
+//     createdAt: createdAtTime,
+// 	};
+// 	if (!serve.snipe[0]) serve.snipe.push(msg);
+// 	if (serve.snipe[0]) {
+// 		serve.snipe.splice(0, serve.snipe.length);
+// 		serve.snipe.push(msg);
+// 	}
+// });
 
 client.on('messageReactionAdd', async (reaction, user) => {
 	if (!reaction.message.guild) return;
@@ -433,13 +442,15 @@ client.on('guildDelete', async guild => {
 
 // eslint-disable-next-line no-unused-vars
 let presence = setInterval(() => {
-	const Activity = client.user.presence.activities.find(a => a.type == 'LISTENING');
-	if (!Activity) {
-		const command = client.commands.get('status');
-		const BirdyActivity = command.fetchStatus();
-		client.user.setActivity(BirdyActivity, {
-				type: 'LISTENING',
-				name: BirdyActivity,
-    }).then(() => console.log('Reset status'));
-	}
+  if (client.user) {
+    const Activity = client.user.presence.activities.find(a => a.type == 'LISTENING');
+	  if (!Activity) {
+		  const command = client.commands.get('status');
+		  const BirdyActivity = command.fetchStatus();
+		  client.user.setActivity(BirdyActivity, {
+				  type: 'LISTENING',
+				  name: BirdyActivity,
+      }).then(() => console.log('Reset status'));
+	  }
+  }
 }, 120000);

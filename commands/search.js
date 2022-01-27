@@ -142,9 +142,13 @@ module.exports = {
 						const connection = voice.getVoiceConnection(message.guild.id);
 						connection.subscribe(server.player);
 						server.player.play(resource);
+            let msg;
+            let count = 0;
 						server.player.on(voice.AudioPlayerStatus.Playing, async () => {
 							if (server.errorcount != 0) server.errorcount = 0;
-							const embed1 = new Discord.MessageEmbed()
+              count++;
+              if (count == 1) {
+                const embed1 = new Discord.MessageEmbed()
 								.setAuthor({ name: `${server.queue[0].author} on Youtube` })
 								.setTitle('**Now Playing**')
 								.setDescription(`**[${server.queue[0].title}](${server.queue[0].url})**`)
@@ -158,13 +162,16 @@ module.exports = {
 									{ name: 'Upload Date', value: server.queue[0].uploadDate, inline: true },
 								);
 							}
-							message.channel.send({ embeds: [embed1] });
+							msg = await message.channel.send({ embeds: [embed1] });
 							console.log(`Now playing in ${message.guild.name}!`);
+              }
 							if (!message.guild.me.voice.selfDeaf) message.guild.me.voice.setSelfDeaf(true).then(() => console.log('Birdy deafened'));
 						});
 						server.player.on(voice.AudioPlayerStatus.Idle, async () => {
+              const save = server.queue[0];
 							if (server.loopvalue == false && server.loopqueue == false) server.queue.shift();
 							if (server.loopvalue == false && server.loopqueue == true) server.queue.push(server.queue.shift());
+              count = 0;
 							switch(server.queue.length) {
 							case 0:
 								playingMap.delete(`${message.guild.id}`, 'Now Playing');
@@ -178,15 +185,23 @@ module.exports = {
 							default:
 								if (server.loopvalue == false) server.loopcount = 0;
 								if (server.loopvalue == true) server.loopcount++;
+                if (msg != null) {
+                  if (msg.embeds[0].description == `**[${save.title}](${save.url})**` && msg.id != message.channel.messages.cache.first().id) {
+                    msg.delete().catch(() => console.log('Unable to delete song embed.'));
+                  }
+                }
+                msg = null;
 								playSong();
 								break;
 							}
 						});
 						server.player.on('error', async () => {
 							server.errorcount++;
+              count = 0;
 							if (server.errorcount > 3) {
 								message.channel.send('I could not play your music so I give up and will play the next song.');
 								server.queue.shift();
+                msg = null;
 								playSong();
 							}
 							else {

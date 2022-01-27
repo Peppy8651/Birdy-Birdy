@@ -1,5 +1,4 @@
-const { globalPrefix } = require('../../config.json');
-
+const globalPrefix = '>';
 module.exports = {
 	command: `${globalPrefix}add`,
 	description: 'Adds a video or song to the queue if something is currently playing in a server.',

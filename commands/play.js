@@ -5,6 +5,7 @@ const Discord = require('discord.js');
 const voice = require('@discordjs/voice');
 const ytdl = require('ytdl-core');
 const ytsr = require('ytsr');
+const { AudioPlayerStatus } = require('@discordjs/voice');
 function secondsToHms(d) {
 	d = Number(d);
 	var h = Math.floor(d / 3600);
@@ -19,7 +20,7 @@ function secondsToHms(d) {
 function getStream(message, server) {
   let stream;
   try {
-    stream = ytdl(`${server.queue[0].url}`, { filter: 'audioonly', quality: 'highestaudio', dlChunkSize: 0, highWaterMark: 1 << 25 });
+    stream = ytdl(`${server.queue[0].url}`, { filter: 'audioonly', dlChunkSize: 0, quality: 'highestaudio', highWaterMark: 1 << 25 });
   }
   catch(err) {
       message.channel.send(`Unable to play song. Error: ${err.message}`);
@@ -103,13 +104,38 @@ module.exports = {
 				const stream = getStream(message, server);
 				const crap = await voice.demuxProbe(stream);
 				const resource = voice.createAudioResource(crap.stream, { inlineVolume: false, inputType: crap.type });
-				server.player = voice.createAudioPlayer({});
+				server.player = voice.createAudioPlayer();
 				const connection = voice.getVoiceConnection(message.guild.id);
 				connection.subscribe(server.player);
 				server.player.play(resource);
 				let msg;
+        let count = 0;
+        server.player.on(AudioPlayerStatus.Playing, async () => {
+					if (server.errorcount != 0) server.errorcount = 0;
+          count++;
+          if (count == 1) {
+            const embed = new Discord.MessageEmbed()
+						.setAuthor({ name: `${server.queue[0].author} on Youtube` })
+						.setTitle('**Now Playing**')
+						.setDescription(`**[${server.queue[0].title}](${server.queue[0].url})**`)
+						.setColor(0xFF0000)
+						.setFooter({ text: `Song added by ${server.queue[0].msgauthor.tag}`, iconURL: server.queue[0].msgauthor.displayAvatarURL() })
+						.setTimestamp();
+					if (server.loopcount < 1) embed.setImage(server.queue[0].thumbnail);
+					if (server.loopcount < 1) {
+					  embed.addFields(
+							{ name: 'Duration', value: server.queue[0].duration, inline: true },
+							{ name: 'Upload Date', value: server.queue[0].uploadDate, inline: true },
+						);
+					 }
+            msg = await message.channel.send({ embeds: [embed] });
+            console.log(`Now playing in ${message.guild.name}!`);
+          }
+					if (!message.guild.me.voice.selfDeaf) message.guild.me.voice.setSelfDeaf(true).then(() => console.log('Birdy deafened'));
+				});
 				server.player.on('error', async () => {
 					server.errorcount++;
+          count = 0;
 					if (server.errorcount > 3) {
 						message.channel.send('I could not play your music so I give up and will play the next song.');
 						server.queue.shift();
@@ -122,32 +148,11 @@ module.exports = {
 						msg = null;
 					}
 				});
-				server.player.on(voice.AudioPlayerStatus.Playing, async () => {
-					if (server.errorcount != 0) server.errorcount = 0;
-					const embed = new Discord.MessageEmbed()
-						.setAuthor({ name: `${server.queue[0].author} on Youtube` })
-						.setTitle('**Now Playing**')
-						.setDescription(`**[${server.queue[0].title}](${server.queue[0].url})**`)
-						.setColor(0xFF0000)
-						.setFooter({ text: `Song added by ${server.queue[0].msgauthor.tag}`, iconURL: server.queue[0].msgauthor.displayAvatarURL() })
-						.setTimestamp();
-					if (server.loopcount < 1) embed.setImage(server.queue[0].thumbnail);
-					if (server.loopcount < 1) {
-						embed.addFields(
-							{ name: 'Duration', value: server.queue[0].duration, inline: true },
-							{ name: 'Upload Date', value: server.queue[0].uploadDate, inline: true },
-						);
-					}
-					if (server.resuming == false) {
-            msg = await message.channel.send({ embeds: [embed] });
-          }
-					console.log(`Now playing in ${message.guild.name}!`);
-					if (message.guild.me.voice.selfDeaf == false) message.guild.me.voice.setDeaf(true).then(() => console.log('Birdy deafened'));
-				});
 				server.player.on(voice.AudioPlayerStatus.Idle, async () => {
 					const save = server.queue[0];
 					if (server.loopvalue == false && server.loopqueue == false) server.queue.shift();
 					if (server.loopvalue == false && server.loopqueue == true) server.queue.push(server.queue.shift());
+          count = 0;
 					switch(server.queue.length) {
 					case 0:
             server.resuming = false;
@@ -164,7 +169,7 @@ module.exports = {
 						if (server.loopvalue == false) server.loopcount = 0;
 						if (server.loopvalue == true) server.loopcount++;
             if (msg != null) {
-              if (msg.deleted == false && msg.embeds[0].description == `**[${save.title}](${save.url})**` && msg.id != message.channel.messages.cache.first().id) {
+              if (msg.embeds[0].description == `**[${save.title}](${save.url})**` && msg.id != message.channel.messages.cache.first().id) {
                 msg.delete().catch(() => console.log('Unable to delete song embed.'));
               }
             }

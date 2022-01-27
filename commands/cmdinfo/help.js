@@ -1,5 +1,5 @@
 /* eslint-disable indent */
-const { globalPrefix } = require('../../config.json');
+const globalPrefix = '>';
 module.exports = {
     command: `${globalPrefix}help`,
     description: 'Gives a list of commands.',

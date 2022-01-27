@@ -1,5 +1,4 @@
-const { globalPrefix } = require('../../config.json');
-
+const globalPrefix = '>';
 module.exports = {
 	command: `${globalPrefix}bonk`,
 	description: 'Post a picture of you bonking someone else',

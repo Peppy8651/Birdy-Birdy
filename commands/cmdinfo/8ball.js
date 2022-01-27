@@ -1,5 +1,4 @@
-const { globalPrefix } = require('../../config.json');
-
+const globalPrefix = '>';
 module.exports = {
 	command: `${globalPrefix}8ball`,
 	description: 'You give Birdy a request, you get Birdy\'s answer.',

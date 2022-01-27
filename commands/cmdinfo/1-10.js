@@ -1,4 +1,4 @@
-const { globalPrefix } = require('../../config.json');
+const globalPrefix = '>';
 
 module.exports = {
 	command: `${globalPrefix}1-10`,

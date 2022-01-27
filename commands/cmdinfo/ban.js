@@ -1,5 +1,4 @@
-const { globalPrefix } = require('../../config.json');
-
+const globalPrefix = '>';
 module.exports = {
 	command: `${globalPrefix}ban`,
 	description: 'Bans a member. You need the Administrator or BAN MEMBERS permission to do this.',

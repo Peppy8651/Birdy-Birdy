@@ -1,3 +1,5 @@
+const { getVoiceConnection } = require('@discordjs/voice');
+
 module.exports = {
 	name: 'forcedisconnect',
 	description: 'force disconnect command',
@@ -10,6 +12,7 @@ module.exports = {
 		if (server.loopvalue != false) server.loopcount = 0;
 		if (server.loopvalue != false) server.loopvalue = false;
 		if (server.loopqueue != false) server.loopqueue = false;
-		message.channel.send('Forcefully disconnected.');
+		const connection = getVoiceConnection(message.guild.id);
+    connection.destroy();
 	},
 };
