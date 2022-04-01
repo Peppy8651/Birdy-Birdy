@@ -34,7 +34,7 @@
     "simple-youtube-api": "^5.2.1",
     "steamapi": "^2.1.2",
     "utf-8-validate": "^5.0.7",
-    "ytdl-core": "^4.10.1",
+    "ytdl-core": "^4.11.0",
     "ytdl-core-discord": "^1.2.3",
     "ytpl": "^2.0.4",
     "ytsr": "3.2.1",
